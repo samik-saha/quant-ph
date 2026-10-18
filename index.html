@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>8.04 Companion — MIT Quantum Physics I, Lectures 1–3</title>
+<meta name="description" content="Interactive companion to MIT 8.04 Quantum Physics I (Zwiebach, Spring 2016): summaries, equations, simulations and revision tools for Lectures 1–3.">
+<link rel="stylesheet" href="assets/style.css">
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top" data-nav="home"><span class="brand-mark">ψ</span><span><strong>8.04 Companion</strong><small>MIT Quantum Physics I · Zwiebach · Spring 2016</small></span></a>
+    <nav class="topnav" aria-label="Modes">
+      <button class="mode-btn is-active" data-mode="follow">Follow along</button>
+      <button class="mode-btn" data-mode="revise">Revision</button>
+      <button class="mode-btn" data-mode="equations">Equation sheet</button>
+    </nav>
+    <div class="progress-wrap" title="Segments marked done"><div class="progress-track"><div id="progressBar"></div></div><span id="progressLabel">0 / 14</span></div>
+  </div>
+</header>
+
+<div class="layout" id="top">
+  <aside class="sidebar">
+    <div class="side-block">
+      <h2>Lectures 1–3</h2>
+      <p class="side-note">First 14 clips of the <a href="https://www.youtube.com/playlist?list=PLUl4u3cNGP60cspQn3N9dYRPiyVWDd80G" target="_blank" rel="noreferrer">YouTube playlist</a>, grouped as MIT OCW groups them. Summaries are written from the lecture transcripts — paraphrased, not quoted at length.</p>
+      <div id="lectureNav"></div>
+    </div>
+    <div class="side-block follow-only">
+      <h3>How to use this</h3>
+      <ol class="howto"><li>Watch a clip (embedded, timestamped).</li><li>Read the 2-minute summary + equations.</li><li>Play with the simulation.</li><li>Answer the checkpoint, then tick the clip done.</li></ol>
+      <button id="resetProgress" class="ghost-btn">Reset progress</button>
+    </div>
+    <div class="side-block">
+      <h3>Constants</h3>
+      <div class="const-list">
+        <div><span>\(h\)</span><b>6.626×10<sup>−34</sup> J·s</b></div>
+        <div><span>\(\hbar=h/2\pi\)</span><b>1.055×10<sup>−34</sup> J·s</b></div>
+        <div><span>\(\hbar c\)</span><b>197.3 eV·nm</b></div>
+        <div><span>\(hc\)</span><b>1240 eV·nm</b></div>
+        <div><span>\(m_ec^2\)</span><b>0.511 MeV</b></div>
+        <div><span>\(\lambda_{C,e}\)</span><b>2.426 pm</b></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section class="hero">
+      <p class="hero-kicker">An overview · superposition &amp; interferometers · photons as particles</p>
+      <h1>Quantum mechanics stops being a story<br>and starts being a calculation.</h1>
+      <p class="hero-lede">Lectures 1–3 lay the whole foundation: quantum dynamics is <em>linear</em>, states are <em>complex</em> vectors, measurement is <em>probabilistic</em>, a single photon can be in <em>two places at once</em> — and light really does arrive in indivisible packets with \(E=h\nu\) and \(p=h/\lambda\). Work through them in order; every clip has a simulation you can break.</p>
+      <div class="hero-actions">
+        <a class="btn btn-dark" href="#lecture-1">Start Lecture 1 →</a>
+        <a class="btn" href="https://ocw.mit.edu/courses/8-04-quantum-physics-i-spring-2016/resources/quantum-mechanics-as-a-framework/" target="_blank" rel="noreferrer">MIT OCW course page ↗</a>
+        <a class="btn" href="https://www.youtube.com/watch?v=jANZxzetPaQ&amp;list=PLUl4u3cNGP60cspQn3N9dYRPiyVWDd80G" target="_blank" rel="noreferrer">Playlist on YouTube ↗</a>
+      </div>
+      <div class="hero-stats">
+        <div><strong>3</strong><span>lectures</span></div><div><strong>14</strong><span>clips · ~3 h 20 m</span></div><div><strong>8</strong><span>simulations</span></div><div><strong>20</strong><span>checkpoint questions</span></div>
+      </div>
+    </section>
+
+    <section class="revise-banner revise-only">
+      <h2>Revision mode</h2>
+      <p>Explanations are collapsed. Use the flashcards, the one-screen equation sheet, and the checkpoints. Click any lecture title to re-open its full notes.</p>
+    </section>
+
+    <div id="lectures"></div>
+
+    <section class="panel" id="equationSheet">
+      <div class="panel-head"><h2>Equation sheet — Lectures 1–3</h2><button class="ghost-btn" onclick="window.print()">Print / save PDF</button></div>
+      <div id="sheetGrid"></div>
+      <p class="fineprint">Print this page with the Equation sheet tab active for a clean revision sheet.</p>
+    </section>
+
+    <section class="panel revise-only-block" id="flashcards">
+      <div class="panel-head"><h2>Flashcards</h2><span class="panel-sub">Click a card to flip it. Shuffle for a mixed test.</span></div>
+      <div class="flash-tools"><button class="btn btn-dark" id="shuffleCards">Shuffle</button><button class="btn" id="flipAll">Flip all</button><span id="cardCount"></span></div>
+      <div class="flash-grid" id="flashGrid"></div>
+    </section>
+
+    <footer class="footer">
+      <p>Built as a study companion to <a href="https://ocw.mit.edu/courses/8-04-quantum-physics-i-spring-2016/" target="_blank" rel="noreferrer">MIT OCW 8.04 Quantum Physics I (Spring 2016)</a>, Prof. Barton Zwiebach. Videos are embedded from YouTube / MIT OCW. Summaries are original paraphrases prepared from the lectures' transcripts for study use.</p>
+      <p class="fineprint">Static site — no build step. See README for GitHub Pages deployment. Progress is stored only in your browser (localStorage).</p>
+    </footer>
+  </main>
+</div>
+<script src="assets/data.js"></script>
+<script src="assets/sims.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
