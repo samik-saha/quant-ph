@@ -1,12 +1,12 @@
 /* Interactive simulations. Each sim exports mount(el, segmentCode). Pure canvas, no deps. */
 const Sims={};
 function simShell(el,title,desc,controlsHTML,canvasH){
- el.innerHTML=`<h4>${title}</h4><p>${desc}</p><div class="controls">${controlsHTML}</div><canvas width="860" height="${canvasH||240}"></canvas><div class="readout"></div>`;
+ el.innerHTML=`<h4>${title}</h4><p>${desc}</p><div class="controls">${controlsHTML}</div><canvas width="860" height="${canvasH||240}" data-base-h="${canvasH||240}" style="aspect-ratio:860/${canvasH||240}"></canvas><div class="readout"></div>`;
  return {canvas:el.querySelector('canvas'),ctx:el.querySelector('canvas').getContext('2d'),readout:el.querySelector('.readout'),q:s=>el.querySelector(s)};
 }
 function slider(id,label,min,max,step,val,fmt){return `<label class="control">${label} <output id="${id}Out">${fmt(val)}</output><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${val}"></label>`}
 function bindRange(root,id,fn){const i=root.querySelector('#'+id),o=root.querySelector('#'+id+'Out');const h=()=>{const v=parseFloat(i.value);if(o)o.textContent=i.dataset.fmt?i.dataset.fmt.replace('{}',v):v;fn(v)};i.addEventListener('input',h);h();return i}
-function fit(canvas){const r=canvas.getBoundingClientRect(),d=devicePixelRatio||1;canvas.width=r.width*d;canvas.height=(parseInt(canvas.getAttribute('height'))||240)/860*r.width*d;canvas.getContext('2d').setTransform(d,0,0,d,0,0);return{w:r.width,h:canvas.height/d}}
+function fit(canvas){if(!canvas.dataset.baseH)canvas.dataset.baseH=String(parseInt(canvas.getAttribute('height'))||240);const baseH=Number(canvas.dataset.baseH),r=canvas.getBoundingClientRect(),d=devicePixelRatio||1,w=r.width||860,h=w*baseH/860;canvas.width=Math.round(w*d);canvas.height=Math.round(h*d);canvas.style.height=h+'px';canvas.getContext('2d').setTransform(d,0,0,d,0,0);return{w,h}}
 /* ---- Polarizer + single photon counting ---- */
 Sims.polarizer=function(el){const s=simShell(el,"Simulation — Malus's law, one photon at a time","Drag α. The bar is the classical intensity fraction cos²α; the dots are individual photons — each one wholly passes or is absorbed. Watch the fraction settle to cos²α only after many photons.",slider('alpha','Polarisation angle α',0,90,1,35,v=>v+'°')+`<button class="btn btn-dark" id="fire">Fire 200 photons</button><button class="btn" id="clearDots">Clear</button>`,260);
  let alpha=35*Math.PI/180,passed=0,total=0,dots=[];

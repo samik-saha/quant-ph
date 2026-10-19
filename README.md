@@ -11,6 +11,19 @@ Interactive web companion to MIT OCW **8.04 Quantum Physics I** (Prof. Barton Zw
 - **Checkpoint quizzes** (15 questions) with instant explanations, plus a per-clip "mark done" progress tracker (localStorage only).
 - **Revision mode**: flashcards, a printable one-screen equation sheet, and collapsed explanations.
 
+## Pages
+
+- `index.html` — home: lecture index cards, equation sheet, flashcards.
+- `lecture-1.html`, `lecture-2.html`, `lecture-3.html` — one page per lecture, each with its clips, simulations, checkpoints, and prev/next navigation. Sidebar links and progress work across pages.
+
+## Tests
+
+```bash
+node --test tests/
+```
+
+Covers the simulation canvas-sizing regression: redrawing a simulation (moving any control) must never change the canvas size.
+
 ## Run locally
 
 No build step. Serve the folder statically:
