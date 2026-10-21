@@ -1,4 +1,4 @@
-/* Lecture content for MIT 8.04 Lectures 1-3. Summaries paraphrased from transcripts. */
+/* Lecture content for MIT 8.04 Lectures 1-4. Summaries paraphrased from transcripts. */
 const LECTURES=[
 {id:1,code:"Lecture 1",title:"An overview of quantum mechanics",sub:"Linearity, complex numbers, loss of determinism, superposition — and the Mach–Zehnder interferometer.",runtime:"≈ 67 min",ocw:"https://ocw.mit.edu/courses/8-04-quantum-physics-i-spring-2016/resources/quantum-mechanics-as-a-framework/",
 segments:[
@@ -78,6 +78,39 @@ segments:[
  equations:[["de Broglie wavelength","\\[ \\lambda_{\\text{dB}}=\\frac{h}{p}=\\frac{h}{\\gamma mv}\\;\\xrightarrow{v\\ll c}\\;\\frac{h}{mv},\\qquad E=h\\nu,\\;\\;p=\\hbar k,\\;\\;E=\\hbar\\omega \\]"],["Useful scale","Electron at 100 eV: \\(\\lambda\\approx0.123\\) nm — atomic spacing, hence electron diffraction. A 1 g bead at 1 m/s: \\(\\lambda\\sim10^{-31}\\) m — hopelessly unobservable."]],
  takeaway:"λ_dB = h/p for everything. Quantum waviness shows up exactly when λ_dB is comparable to the structures the particle meets.",
  sim:"debroglie"}
+]},
+{id:4,code:"Lecture 4",title:"de Broglie matter waves, group velocity, and the free-particle wave",sub:"Matter waves in boosted frames, phase vs group velocity, stationary phase — and the argument that fixes ψ = e^{i(kx−ωt)}.",runtime:"≈ 72 min",ocw:"https://ocw.mit.edu/courses/8-04-quantum-physics-i-spring-2016/resources/de-broglie-wavelength-in-different-frames/",
+segments:[
+{code:"L4.1",id:"8x94EgM2Mpg",title:"de Broglie wavelength in different frames",mins:"14:53",
+ summary:["The plane wave \\(\\lambda=h/p\\) grows up: it becomes the <b>wavefunction</b> \\(\\Psi(x,t)\\) — one complex function to begin with. Spin adds directional properties later (photons are spin-1, electrons spin-½, needing several components), but at low velocities and small fields a single \\(\\Psi\\) suffices.","Ask what \\(\\lambda=h/p\\) means to a boosted observer. In a Galilean frame S′ moving at \\(V\\), the particle's momentum is \\(p'=p-mV\\) — so the runner measures \\(\\lambda'=h/(p-mV)\\), wildly different from the lab's \\(\\lambda=h/p\\).","That never happens for sound or water waves: photograph the crests while running or standing still and the spacing is the same. Matter waves are strange waves — expect a strange interpretation to match."],
+ equations:[["Matter wave, wave number, frequency","\\[ \\lambda=h/p,\\qquad p=\\hbar k,\\quad k=2\\pi/\\lambda,\\qquad E=\\hbar\\omega,\\quad \\omega=2\\pi\\nu \\]"],["Galilean boost (non-relativistic)","\\[ x'=x-Vt,\\;t'=t,\\;v'=v-V,\\;p'=p-mV,\\;\\lambda'=h/(p-mV) \\]"]],
+ takeaway:"λ = h/p is frame-dependent in a way no ordinary wavelength is — the first proof these waves play by different rules.",
+ sim:"debroglie"},
+{code:"L4.2",id:"YdtHAIh-kas",title:"Galilean transformation of ordinary waves",mins:"12:16",
+ summary:["For an ordinary wave what is real is its <b>phase</b> \\(\\Phi=kx-\\omega t\\): zeros and maxima sit somewhere definite, and every observer must agree where — so \\(\\Phi\\) is a Galilean invariant (\\(\\Phi'=\\Phi\\) at the same point and time).","Substituting \\(x=x'+Vt\\) into \\(\\Phi\\) and reading off the coefficients of \\(x'\\) and \\(t'\\) gives \\(k'=k\\) (so \\(\\lambda'=\\lambda\\)) with only the frequency shifted — the formal version of 'running past a water wave changes its pitch, not its crest spacing'.","De Broglie waves flunk this test: two observers need not agree on the complex value of \\(\\Psi\\) at the same point. So \\(\\Psi\\) is neither directly measurable (complex numbers never are) nor Galilean invariant — but the frames' values are related by a definite transformation law."],
+ equations:[["Wave phase (Galilean invariant)","\\[ \\Phi=kx-\\omega t=\\tfrac{2\\pi}{\\lambda}(x-v_{\\text{wave}}t),\\qquad \\Phi'=\\Phi \\]"],["Boosted ordinary wave","\\[ k'=k\\;(\\lambda'=\\lambda),\\qquad \\omega'=\\omega-kV=\\omega(1-V/v_{\\text{wave}}) \\]"]],
+ takeaway:"Ordinary waves keep their wavelength in every Galilean frame. Matter waves don't — so Ψ itself can't be the directly measurable thing.",
+ sim:null},
+{code:"L4.3",id:"3_qvO8bKGus",title:"The frequency of a matter wave",mins:"10:23",
+ summary:["De Broglie's completion by analogy: just as \\(p=\\hbar k\\) fixes the wavelength from the momentum, \\(E=\\hbar\\omega\\) fixes the frequency from the energy. This is a <b>postulate</b> — the best we can do now is show it makes sense several ways and hope the theory built on it does.","First check: the <b>phase velocity</b> \\(v_{\\text{ph}}=\\omega/k=E/p=v/2\\) — half the particle speed. 'Pretty bad', except a pure plane wave carries no signal or information, so its speed need not mean anything. Particles must be represented by <b>wavepackets</b>.","The velocity that matters is the <b>group velocity</b> \\(v_g=d\\omega/dk=dE/dp=p/m=v\\) — exactly the particle's velocity, relativistically too. Relativity adds a nudge: \\((E/c,\\mathbf p)\\) and \\((\\omega/c,\\mathbf k)\\) are both four-vectors, so setting them proportional is almost irresistible."],
+ equations:[["Phase velocity (carries no signal)","\\[ v_{\\text{ph}}=\\omega/k=E/p=\\tfrac{\\frac12mv^2}{mv}=v/2 \\]"],["Group velocity (the physical one)","\\[ v_g=\\left.\\frac{d\\omega}{dk}\\right|_{k_0}=\\frac{dE}{dp}=\\frac{p}{m}=v \\]"]],
+ takeaway:"Ripples outrun nothing: they slide at v/2 while the packet — the thing that carries the particle — travels at v.",
+ sim:"wavepacket"},
+{code:"L4.4",id:"-UgQEHHXTRM",title:"Group velocity and stationary phase approximation",mins:"10:32",
+ summary:["Assume a dispersion relation \\(\\omega(k)\\): given \\(k\\) you know \\(\\omega\\) (for matter, \\(\\omega\\propto k^2\\) since \\(E\\propto p^2\\)). Build a packet by superposition: \\(\\psi(x,t)=\\int dk\\,\\phi(k)\\,e^{i(kx-\\omega(k)t)}\\) with \\(\\phi(k)\\) a narrow bump around some \\(k_0\\).","The <b>principle of stationary phase</b>: a slowly varying function times a rapid oscillation integrates to almost nothing — peaks cancel troughs. The integral only gets a contribution where the oscillation goes quiet, i.e. where the phase is stationary in the integration variable.","Stationarity \\(\\frac{d}{dk}(kx-\\omega(k)t)=0\\) at \\(k_0\\) gives \\(x=(d\\omega/dk)t\\) — the hump sits where this holds, so the packet moves at the group velocity. A tool used throughout the course."],
+ equations:[["Wavepacket and stationary-phase condition","\\[ \\psi(x,t)=\\int dk\\,\\phi(k)\\,e^{i(kx-\\omega(k)t)},\\qquad \\left.\\frac{d}{dk}\\big(kx-\\omega(k)t\\big)\\right|_{k_0}=0 \\]"],["Packet motion","\\[ x=\\left.\\frac{d\\omega}{dk}\\right|_{k_0}t=v_gt \\]"]],
+ takeaway:"Fast oscillations cancel; only the stationary-phase point survives — and it travels at dω/dk.",
+ sim:"wavepacket"},
+{code:"L4.5",id:"i81OpQJIH8U",title:"Motion of a wave-packet",mins:"8:59",
+ summary:["The same result by doing the integral: Taylor-expand \\(\\omega(k)\\approx\\omega_0+(k-k_0)v_g\\) near \\(k_0\\), since only nearby \\(k\\) contribute. Higher orders are dropped for now — they distort the packet, a story for later.","\\(k\\)-independent phase factors pull out of the integral; what remains has exactly the form of \\(\\psi(\\cdot,0)\\) evaluated at a shifted argument.","Taking \\(|\\cdot|\\) kills the pure phases (and the bump may hide in Re or Im anyway): \\(|\\psi(x,t)|=|\\psi(x-v_gt,0)|\\). The envelope rides rigidly at the group velocity — two presentations of one result."],
+ equations:[["Linearised dispersion","\\[ \\omega(k)\\approx\\omega_0+(k-k_0)v_g,\\qquad v_g=\\left.\\tfrac{d\\omega}{dk}\\right|_{k_0} \\]"],["Rigid motion of the envelope","\\[ |\\psi(x,t)|=|\\psi(x-v_gt,0)| \\]"]],
+ takeaway:"To first order in (k − k₀), the packet keeps its shape and moves at v_g. Distortion needs the quadratic term.",
+ sim:"wavepacket"},
+{code:"L4.6",id:"T6TQHNXy5Wg",title:"The wave for a free particle",mins:"14:33",
+ summary:["Which wave moves right — \\(\\sin\\), \\(\\cos\\), or \\(e^{\\pm i(kx-\\omega t)}\\)? Decide by superposition plus a vague demand of probability. Build equal left+right mixtures: sines give \\(2\\sin(kx)\\sin(\\omega t)\\), which vanishes <b>everywhere</b> at \\(\\omega t=\\pi/2,3\\pi/2,\\dots\\) — the particle periodically disappears. Unacceptable; same for cosines.","The exponentials survive: \\(e^{i(kx-\\omega t)}+e^{-i(kx+\\omega t)}=2\\cos(kx)e^{-i\\omega t}\\) never vanishes identically, because an exponential is never zero — only isolated nodes, where the particle simply isn't found. The \\(e^{+i\\omega t}\\) family passes the same test.","Both families can't hold at once: superposing one's right-mover with the other's rebuilds the rejected sine. Convention picks one — everybody chose \\(\\psi=e^{i(kx-\\omega t)}\\), energy phase always \\(e^{-i\\omega t}\\) (3D: \\(e^{i(\\mathbf k\\cdot\\mathbf x-\\omega t)}\\)). Next: the equation it obeys."],
+ equations:[["Rejected: real standing waves","\\[ 2\\sin(kx)\\sin(\\omega t),\\;2\\cos(kx)\\cos(\\omega t)\\to0\\ \\forall x\\ \\text{at }\\omega t=\\pi/2,3\\pi/2,\\dots \\]"],["Chosen: free-particle wave","\\[ \\psi(x,t)=e^{i(kx-\\omega t)},\\quad p=\\hbar k,\\;E=\\hbar\\omega;\\qquad \\text{3D: }e^{i(\\mathbf k\\cdot\\mathbf x-\\omega t)} \\]"]],
+ takeaway:"The matter wave is complex by necessity, not taste: only e^{i(kx−ωt)} survives superposition plus probability.",
+ sim:"phasor"}
 ]}];
 const QUIZZES={
 "L1.2":[{q:"Newton's equation m·ẍ = −V′(x) is nonlinear because…",opts:["taking derivatives is nonlinear","V′(x) need not be proportional to x (e.g. V∼x³ gives x²)","mass is constant"],a:1,why:"Derivatives are linear operations; the potential's shape is what breaks linearity."},
@@ -99,7 +132,15 @@ const QUIZZES={
 "L3.3":[{q:"Compton scattering at θ = 180° (backscatter) gives Δλ = …",opts:["0","λ_C ≈ 2.43 pm","2λ_C ≈ 4.85 pm"],a:2,why:"Δλ = λ_C(1−cosθ); cos180° = −1, so Δλ = 2λ_C — the maximum shift."},
 {q:"Classical Thomson scattering predicts the scattered wavelength…",opts:["increases with angle","equals the incident wavelength","is halved"],a:1,why:"The electron just re-radiates at the driving frequency. Compton's measured shift killed the pure-wave account."}],
 "L3.4":[{q:"A proton and an electron have the same momentum. Their de Broglie wavelengths are…",opts:["the proton's is larger","equal — λ = h/p depends only on p","the electron's is larger"],a:1,why:"λ_dB = h/p. Mass enters only through p (at fixed velocity the electron's λ would be ~1836× larger)."},
-{q:"Why don't baseballs show interference?",opts:["They are too warm","λ_dB = h/p is astronomically smaller than any slit","They are not particles"],a:1,why:"For m = 0.15 kg at 40 m/s, λ ≈ 10⁻³⁴ m. No aperture comes close, so no observable waviness."}]
+{q:"Why don't baseballs show interference?",opts:["They are too warm","λ_dB = h/p is astronomically smaller than any slit","They are not particles"],a:1,why:"For m = 0.15 kg at 40 m/s, λ ≈ 10⁻³⁴ m. No aperture comes close, so no observable waviness."}],
+"L4.1":[{q:"Two observers in relative motion compare the de Broglie wavelength of the same particle. They…",opts:["measure the same λ, like a photo of a water wave","measure different λ — a boost sends p to p − mV, so λ = h/p changes","both measure λ = h/mc"],a:1,why:"p′ = p − mV gives λ′ = h/(p − mV), wildly different from lab λ. Ordinary wavelengths don't do this."},
+{q:"Why start with a single complex Ψ(x,t) for an electron?",opts:["Complex numbers are directly measurable","spin's directional effects can be ignored to begin with (slow electrons, small fields)","Electrons have no spin"],a:1,why:"Spin needs several wavefunction components; while spin effects are negligible, one complex Ψ suffices."}],
+"L4.3":[{q:"For a free nonrelativistic particle, the phase velocity of its matter wave is…",opts:["v","v/2","2v"],a:1,why:"v_ph = ω/k = E/p = (½mv²)/(mv) = v/2. A pure plane wave carries no signal, so this speed means nothing."},
+{q:"The speed of the packet — the physically meaningful velocity — is…",opts:["dω/dk = v","ω/k = v/2","ω·k"],a:0,why:"Group velocity v_g = dω/dk = dE/dp = p/m = v — the packet, and the particle, move at v."}],
+"L4.4":[{q:"Where does the wavepacket hump sit, by stationary phase?",opts:["Where d/dk(kx − ω(k)t) = 0 at k₀, i.e. x = v_g·t","Where ω(k₀) = 0","Wherever φ(k) is zero"],a:0,why:"Fast oscillations cancel except at the stationary-phase point; the hump follows x = (dω/dk)t."},
+{q:"Why do only k ≈ k₀ contribute to ψ(x,t) = ∫dk φ(k)e^{i(kx−ω(k)t)}?",opts:["φ(k) is a narrow bump near k₀ and ~0 elsewhere","the exponential is zero elsewhere","k₀ is the only allowed wave number"],a:0,why:"The amplitude φ(k) vanishes outside a small neighbourhood of k₀, so the integral lives there."}],
+"L4.6":[{q:"Why can't sin(kx − ωt) be the matter wave?",opts:["It vanishes everywhere at ωt = π/2, 3π/2, … — the particle keeps disappearing","It is not normalizable","It has the wrong dimensions"],a:0,why:"Equal left+right sine mixtures give 2sin(kx)sin(ωt), identically zero at those times. No particle, no good."},
+{q:"The chosen wave ψ = e^{i(kx−ωt)} survives because…",opts:["the time factor e^{−iωt} is never zero, so no total cancellation","it is real-valued","it has no frequency"],a:0,why:"Exponentials never vanish: 2cos(kx)e^{−iωt} has only isolated nodes, where the particle just isn't found."}]
 };
 const FLASHCARDS=[
 ["Why is QM linear, and why does it matter?","Schrödinger's operator iħ∂ₜ − Ĥ is linear, so any αψ₁+βψ₂ of solutions is a solution. Superposition — and everything built on it — follows."],
@@ -113,7 +154,13 @@ const FLASHCARDS=[
 ["Elitzur–Vaidman in one line","A D₁ click in a Mach–Zehnder with a bomb in one arm proves the bomb works — and it didn't explode (P=¼ per photon; ½ explode, ¼ inconclusive)."],
 ["Photoelectric law","K_max = hν − W. Frequency sets electron energy; intensity sets electron count; below ν₀ = W/h, nothing at any intensity."],
 ["Compton shift","λ′−λ = (h/m_ec)(1−cosθ), λ_C = 2.426 pm. Photons lose energy to the electron like billiard balls."],
-["de Broglie wavelength","λ = h/p for every particle. Waviness is observable when λ rivals the size of slits/structures it meets."]];
+["de Broglie wavelength","λ = h/p for every particle. Waviness is observable when λ rivals the size of slits/structures it meets."],
+["Why do boosted observers disagree on λ_dB?","p′ = p − mV, so λ′ = h/(p − mV) — unlike a photo of a water wave, whose crest spacing every frame agrees on. Matter waves are no ordinary waves."],
+["What is Galilean invariant for ordinary waves?","The phase Φ = kx − ωt: zeros and maxima sit somewhere definite for everyone. Hence k′ = k and λ′ = λ; only the frequency shifts."],
+["Phase vs group velocity for matter waves","v_ph = ω/k = E/p = v/2, and it carries no signal. v_g = dω/dk = dE/dp = v — the packet, and the particle, move at v."],
+["Stationary phase in one line","In ∫φ(k)e^{i(kx−ωt)}dk the fast oscillations cancel; the hump sits where d/dk(kx − ωt) = 0 at k₀, i.e. x = v_g·t."],
+["How the packet moves (to first order)","|ψ(x,t)| = |ψ(x − v_g·t, 0)|: the envelope rides rigidly at v_g. The quadratic term in ω(k) distorts it — later."],
+["The free-particle wave","ψ = e^{i(kx−ωt)} with p = ħk, E = ħω (3D: e^{i(k·x−ωt)}). Real sin/cos choices vanish everywhere at some times — unacceptable for a probability amplitude."]];
 const SHEET=[
 ["Linearity & Schrödinger","\\[ \\hat L(\\alpha\\psi_1+\\beta\\psi_2)=\\alpha\\hat L\\psi_1+\\beta\\hat L\\psi_2,\\qquad i\\hbar\\frac{\\partial\\psi}{\\partial t}=\\hat H\\psi \\]"],
 ["Complex amplitudes","\\[ z=a+ib,\\; z^*=a-ib,\\; |z|^2=zz^*=a^2+b^2,\\; e^{i\\theta}=\\cos\\theta+i\\sin\\theta \\]"],
@@ -123,4 +170,7 @@ const SHEET=[
 ["Entanglement test","\\[ u_1v_1+u_2v_2\\ \\text{does not factorise}\\ \\Rightarrow\\ \\text{entangled} \\]"],
 ["Photoelectric effect","\\[ K_{\\max}=h\\nu-W=eV_{\\text{stop}},\\qquad \\nu_0=W/h,\\qquad E_\\gamma\\approx1240/\\lambda[\\text{nm}]\\ \\text{eV} \\]"],
 ["Compton scattering","\\[ p_\\gamma=h/\\lambda,\\qquad \\lambda'-\\lambda=\\frac{h}{m_ec}(1-\\cos\\theta),\\quad \\lambda_{C,e}=2.426\\ \\text{pm} \\]"],
-["de Broglie (1924)","\\[ \\lambda_{\\text{dB}}=\\frac{h}{p}=\\frac{h}{\\gamma mv},\\qquad p=\\hbar k,\\; E=\\hbar\\omega \\]"]];
+["de Broglie (1924)","\\[ \\lambda_{\\text{dB}}=\\frac{h}{p}=\\frac{h}{\\gamma mv},\\qquad p=\\hbar k,\\; E=\\hbar\\omega \\]"],
+["Galilean frames & matter waves","\\[ x'=x-Vt,\\;t'=t,\\;p'=p-mV,\\;\\lambda'=h/(p-mV)\\ne\\lambda;\\;\\text{ordinary: }k'=k,\\;\\lambda'=\\lambda \\]"],
+["Phase & group velocity","\\[ v_{\\text{ph}}=\\omega/k=E/p=v/2,\\qquad v_g=\\left.\\frac{d\\omega}{dk}\\right|_{k_0}=\\frac{dE}{dp}=v \\]"],
+["Free-particle wave & packet motion","\\[ \\psi=e^{i(kx-\\omega t)},\\;p=\\hbar k,\\;E=\\hbar\\omega;\\qquad |\\psi(x,t)|=|\\psi(x-v_gt,0)| \\]"]];

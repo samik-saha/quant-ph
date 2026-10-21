@@ -129,3 +129,41 @@ Sims.debroglie=function(el){const s=simShell(el,"Simulation — de Broglie wavel
  bindRange(el,'ev',v=>{eV=v;draw()});
  el.querySelector('#dbBase').onclick=()=>{const lam=6.626e-34/(0.15*40);el.querySelector('#dbMsg').textContent=` Baseball λ = h/(mv) ≈ ${lam.toExponential(1)} m — about 10²⁴ times smaller than an atom. No diffraction, ever.`};
  draw();};
+/* ---- Wavepacket: beats, group velocity, rigid motion + spreading ---- */
+Sims.wavepacket=function(el){const s=simShell(el,"Simulation — beats make a packet: phase vs group velocity","Two nearby plane waves with matter dispersion ω = k²/2 (units ħ = m = 1) beat into an envelope. The ripples slide at phase velocity v_ph = k/2 while the envelope — and the Gaussian packet below — travel at group velocity v_g = k. Uncheck spreading to see L4.5's rigid first-order motion; check it for the quadratic-term distortion.",slider('k0','Central wave number k₀',0.6,2.6,0.05,1.6,v=>Number(v).toFixed(2))+slider('dk','Spread Δk',0.1,0.9,0.05,0.35,v=>Number(v).toFixed(2))+`<label class="control"><input type="checkbox" id="spread" checked> spreading (quadratic term)</label><button class="btn btn-dark" id="wpPlay">⏸ Pause</button>`,340);
+ let k0=1.6,dk=0.35,spread=true,t=0,playing=true;
+ const Xmax=24;
+ const draw=()=>{const{w,h}=fit(s.canvas),c=s.ctx;c.clearRect(0,0,w,h);
+  const k1=Math.max(0.05,k0-dk/2),k2=k0+dk/2,w1=k1*k1/2,w2=k2*k2/2,wb=(w1+w2)/2,kb=(k1+k2)/2,vg=k0,vph=wb/kb;
+  const pad=30,X=x=>pad+(x/Xmax)*(w-2*pad);
+  c.font='12px sans-serif';
+  // --- top: two-wave beat + envelope ---
+  const yT=h*0.26,A=h*0.12;
+  c.fillStyle='#18202b';c.fillText('beat of two plane waves k₁, k₂ — sum (blue), envelope (green)',pad,18);
+  c.strokeStyle='#d9e0e8';c.beginPath();c.moveTo(pad,yT);c.lineTo(w-pad,yT);c.stroke();
+  c.setLineDash([4,4]);c.strokeStyle='#0f766e';c.beginPath();for(let i=0;i<=240;i++){const x=i/240*Xmax,e=2*Math.cos(dk*(x-vg*t)/2);i?c.lineTo(X(x),yT-e*A*0.5):c.moveTo(X(x),yT-e*A*0.5)}c.stroke();c.beginPath();for(let i=0;i<=240;i++){const x=i/240*Xmax,e=2*Math.cos(dk*(x-vg*t)/2);i?c.lineTo(X(x),yT+e*A*0.5):c.moveTo(X(x),yT+e*A*0.5)}c.stroke();c.setLineDash([]);
+  c.strokeStyle='#145da0';c.lineWidth=2;c.beginPath();for(let i=0;i<=240;i++){const x=i/240*Xmax,y=Math.cos(k1*x-w1*t)+Math.cos(k2*x-w2*t);i?c.lineTo(X(x),yT-y*A*0.5):c.moveTo(X(x),yT-y*A*0.5)}c.stroke();c.lineWidth=1;
+  const xe=((vg*t)%Xmax+Xmax)%Xmax;
+  const n=Math.round((kb*Xmax/2-wb*t)/(2*Math.PI)),xc=(wb*t+2*Math.PI*n)/kb;
+  c.strokeStyle='#0f766e';c.beginPath();c.moveTo(X(xe),yT-A*0.8);c.lineTo(X(xe),yT+A*0.8);c.stroke();
+  c.fillStyle='#0f766e';c.fillText('envelope peak → v_g',Math.min(X(xe)+6,w-150),yT-A*0.8);
+  if(xc>=0&&xc<=Xmax){c.strokeStyle='#b7791f';c.setLineDash([3,3]);c.beginPath();c.moveTo(X(xc),yT-A*0.8);c.lineTo(X(xc),yT+A*0.8);c.stroke();c.setLineDash([]);c.fillStyle='#b7791f';c.fillText('ripple crest → v_ph',Math.min(X(xc)+6,w-140),yT+A*0.95)}
+  // --- bottom: Gaussian packet with carrier ---
+  const yB=h*0.74,B=h*0.16,C=Xmax+8,tLoc=((vg*t)%C+C)%C/vg,xp=(vg*tLoc)-4;
+  const s0=2/dk,sig=spread?Math.sqrt(s0*s0+(dk*tLoc)*(dk*tLoc)):s0;
+  c.fillStyle='#18202b';c.fillText('Gaussian packet: ripples slide inside an envelope that rides at v_g'+(spread?' (spreading on)':' (rigid: first-order motion)'),pad,h*0.47);
+  c.strokeStyle='#d9e0e8';c.beginPath();c.moveTo(pad,yB);c.lineTo(w-pad,yB);c.stroke();
+  c.fillStyle='rgba(15,118,110,0.15)';c.beginPath();
+  for(let i=0;i<=240;i++){const x=i/240*Xmax,e=Math.exp(-((x-xp)*(x-xp))/(2*sig*sig));i?c.lineTo(X(x),yB-e*e*B):c.moveTo(X(x),yB-e*e*B)}
+  for(let i=240;i>=0;i--){const x=i/240*Xmax;c.lineTo(X(x),yB)}
+  c.closePath();c.fill();
+  c.setLineDash([4,4]);c.strokeStyle='#0f766e';c.beginPath();for(let i=0;i<=240;i++){const x=i/240*Xmax,e=Math.exp(-((x-xp)*(x-xp))/(2*sig*sig));i?c.lineTo(X(x),yB-e*B):c.moveTo(X(x),yB-e*B)}c.stroke();c.setLineDash([]);
+  const w0=k0*k0/2;
+  c.strokeStyle='#145da0';c.lineWidth=2;c.beginPath();for(let i=0;i<=240;i++){const x=i/240*Xmax,e=Math.exp(-((x-xp)*(x-xp))/(2*sig*sig)),y=e*Math.cos(k0*x-w0*t);i?c.lineTo(X(x),yB-y*B):c.moveTo(X(x),yB-y*B)}c.stroke();c.lineWidth=1;
+  s.readout.innerHTML=`<div>v_ph = k/2 <b>${vph.toFixed(3)}</b></div><div>v_g = k <b>${vg.toFixed(3)}</b></div><div>envelope width σ <b>${sig.toFixed(2)} (σ₀ ${s0.toFixed(2)})</b></div><div>t <b>${t.toFixed(1)}</b></div>`};
+ bindRange(el,'k0',v=>{k0=v;draw()});
+ bindRange(el,'dk',v=>{dk=v;draw()});
+ el.querySelector('#spread').addEventListener('change',e=>{spread=e.target.checked;draw()});
+ el.querySelector('#wpPlay').onclick=e=>{playing=!playing;e.target.textContent=playing?'⏸ Pause':'▶ Play';if(playing)step()};
+ const step=()=>{if(!playing)return;t+=0.06;draw();requestAnimationFrame(step)};
+ draw();step();};

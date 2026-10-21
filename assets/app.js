@@ -1,6 +1,6 @@
 /* App rendering: lectures, quizzes, progress, modes, flashcards, equation sheet.
    Page model: index.html is home (lecture cards + equation sheet + flashcards).
-   lecture-1.html / lecture-2.html / lecture-3.html render one lecture each,
+   lecture-N.html pages render one lecture each (N = 1..4),
    selected by <body data-lecture="N">. Without data-lecture, no lecture is rendered. */
 const $=s=>document.querySelector(s);
 const done=new Set(JSON.parse(localStorage.getItem('qm804-done')||'[]'));
