@@ -2,7 +2,14 @@
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.55}
 a{color:#145da0}button{font:inherit;cursor:pointer}
 .topbar{position:sticky;top:0;z-index:50;background:#141b26;color:#fff;border-bottom:3px solid var(--accent)}
-.topbar-inner{max-width:1280px;margin:0 auto;padding:10px 20px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+:root{--page-max:1280px}
+body[data-width="narrow"]{--page-max:960px}
+body[data-width="standard"]{--page-max:1280px}
+body[data-width="full"]{--page-max:none}
+.topbar-inner{max-width:var(--page-max);margin:0 auto;padding:10px 20px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.width-switch{display:flex;gap:2px;align-items:center;border:1px solid #3a4658;border-radius:999px;padding:2px}
+.width-switch button{background:transparent;color:#cbd5e1;border:0;padding:6px 12px;border-radius:999px;font-size:13px;white-space:nowrap}
+.width-switch button.is-active{background:#fff;color:#141b26;font-weight:600}
 .brand{display:flex;gap:10px;align-items:center;color:#fff;text-decoration:none;margin-right:auto}
 .brand-mark{width:40px;height:40px;display:grid;place-items:center;background:var(--accent);color:#141b26;font-family:var(--serif);font-size:24px;font-weight:700;border-radius:8px}
 .brand strong{display:block;font-size:17px}.brand small{display:block;color:#b9c4d1;font-size:12px}
@@ -10,7 +17,8 @@ a{color:#145da0}button{font:inherit;cursor:pointer}
 .mode-btn.is-active{background:#fff;color:#141b26;border-color:#fff;font-weight:600}
 .progress-wrap{display:flex;align-items:center;gap:8px;font-size:12px;color:#cbd5e1}
 .progress-track{width:110px;height:8px;background:#2c384a;border-radius:99px;overflow:hidden}#progressBar{height:100%;width:0;background:var(--accent);transition:width .3s}
-.layout{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:300px 1fr;gap:22px;padding:22px 20px 40px}
+.layout{max-width:var(--page-max);margin:0 auto;display:grid;grid-template-columns:300px 1fr;gap:22px;padding:22px 20px 40px}
+body[data-width="full"] .layout{padding-left:28px;padding-right:28px}
 .sidebar{position:sticky;top:76px;align-self:start;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 90px);overflow:auto}
 .side-block,.panel,.lecture{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
 .side-block h2{font-size:16px;margin:0 0 6px}.side-block h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 8px}

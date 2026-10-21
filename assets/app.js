@@ -51,6 +51,11 @@ function render(){
  renderProgress();
 }
 function renderNavTicks(){document.querySelectorAll('.nav-seg').forEach(a=>{const t=a.querySelector('.tick');if(t)t.textContent=done.has(a.dataset.seg)?'✓':''})}
+const WIDTHS=['narrow','standard','full'];
+function applyWidth(w){if(!WIDTHS.includes(w))w='standard';document.body.dataset.width=w;try{localStorage.setItem('qm804-width',w)}catch(e){}document.querySelectorAll('.width-switch button').forEach(x=>x.classList.toggle('is-active',x.dataset.width===w))}
+let savedWidth='standard';try{savedWidth=localStorage.getItem('qm804-width')||'standard'}catch(e){}
+applyWidth(savedWidth);
+document.querySelectorAll('.width-switch button').forEach(b=>b.addEventListener('click',()=>applyWidth(b.dataset.width)));
 document.querySelectorAll('.mode-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.mode-btn').forEach(x=>x.classList.remove('is-active'));b.classList.add('is-active');document.body.classList.remove('mode-follow','mode-revise','mode-equations');document.body.classList.add('mode-'+b.dataset.mode);const t=b.dataset.mode==='equations'?document.getElementById('equationSheet'):b.dataset.mode==='revise'?document.getElementById('flashcards'):null;if(t)t.scrollIntoView({behavior:'smooth'})}));
 const resetBtn=$('#resetProgress');if(resetBtn)resetBtn.addEventListener('click',()=>{done.clear();saveDone();document.querySelectorAll('[data-done]').forEach(c=>c.checked=false);renderNavTicks()});
 const shuffleBtn=$('#shuffleCards');if(shuffleBtn)shuffleBtn.addEventListener('click',()=>{const g=$('#flashGrid');if(g)[...g.children].sort(()=>Math.random()-0.5).forEach(n=>g.appendChild(n))});
