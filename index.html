@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>8.04 Companion — MIT Quantum Physics I, Lectures 1–4</title>
-<meta name="description" content="Interactive companion to MIT 8.04 Quantum Physics I (Zwiebach, Spring 2016): summaries, equations, simulations and revision tools for Lectures 1–4.">
+<title>8.04 Companion — MIT Quantum Physics I, Lectures 1–24</title>
+<meta name="description" content="Interactive companion to MIT 8.04 Quantum Physics I (Zwiebach, Spring 2016): summaries, equations, simulations and revision tools for Lectures 1–24.">
 <link rel="stylesheet" href="assets/style.css">
 <script>
 window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
@@ -22,15 +22,15 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg
       <button class="mode-btn" data-mode="equations">Equation sheet</button>
     </nav>
     <div class="width-switch" role="group" aria-label="Page width"><button data-width="standard" title="Standard page width">Standard</button><button data-width="wide" title="Wide page width">Wide</button><button data-width="full" title="Use the full browser width">Full</button></div>
-    <div class="progress-wrap" title="Segments marked done"><div class="progress-track"><div id="progressBar"></div></div><span id="progressLabel">0 / 20</span></div>
+    <div class="progress-wrap" title="Segments marked done"><div class="progress-track"><div id="progressBar"></div></div><span id="progressLabel">0 / 115</span></div>
   </div>
 </header>
 
 <div class="layout" id="top">
   <aside class="sidebar">
     <div class="side-block">
-      <h2>Lectures 1–4</h2>
-      <p class="side-note">First 20 clips of the <a href="https://www.youtube.com/playlist?list=PLUl4u3cNGP60cspQn3N9dYRPiyVWDd80G" target="_blank" rel="noreferrer">YouTube playlist</a>, grouped as MIT OCW groups them. Each lecture now has its own page. Summaries are written from the lecture transcripts — paraphrased, not quoted at length.</p>
+      <h2>Lectures 1–24</h2>
+      <p class="side-note">First 115 clips of the <a href="https://www.youtube.com/playlist?list=PLUl4u3cNGP60cspQn3N9dYRPiyVWDd80G" target="_blank" rel="noreferrer">YouTube playlist</a>, grouped as MIT OCW groups them. Each lecture now has its own page. Summaries are written from the lecture transcripts — paraphrased, not quoted at length.</p>
       <div id="lectureNav"></div>
     </div>
     <div class="side-block follow-only">
@@ -53,16 +53,16 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg
 
   <main class="main">
     <section class="hero">
-      <p class="hero-kicker">An overview · superposition &amp; interferometers · photons as particles · matter waves &amp; wavepackets</p>
+      <p class="hero-kicker">From linearity to spin · the complete 8.04 companion</p>
       <h1>Quantum mechanics stops being a story<br>and starts being a calculation.</h1>
-      <p class="hero-lede">Lectures 1–4 lay the whole foundation: quantum dynamics is <em>linear</em>, states are <em>complex</em> vectors, measurement is <em>probabilistic</em>, a single photon can be in <em>two places at once</em> — and light really does arrive in indivisible packets with \(E=h\nu\) and \(p=h/\lambda\). Then matter waves get strange: their wavelength is frame-dependent, their ripples outrun nothing, and only \(\psi=e^{i(kx-\omega t)}\) survives. Each lecture has its own page; work through them in order.</p>
+      <p class="hero-lede">All 24 lectures: quantum dynamics is <em>linear</em>, states are <em>complex</em> vectors, measurement is <em>probabilistic</em> — then the Schrödinger equation, uncertainty, bound states and scattering, angular momentum, and finally hydrogen and spin. Each lecture has its own page; work through them in order.</p>
       <div class="hero-actions">
         <a class="btn btn-dark" href="lecture-1.html">Start Lecture 1 →</a>
         <a class="btn" href="https://ocw.mit.edu/courses/8-04-quantum-physics-i-spring-2016/resources/quantum-mechanics-as-a-framework/" target="_blank" rel="noreferrer">MIT OCW course page ↗</a>
         <a class="btn" href="https://www.youtube.com/watch?v=jANZxzetPaQ&amp;list=PLUl4u3cNGP60cspQn3N9dYRPiyVWDd80G" target="_blank" rel="noreferrer">Playlist on YouTube ↗</a>
       </div>
       <div class="hero-stats">
-        <div><strong>4</strong><span>lectures</span></div><div><strong>20</strong><span>clips · ~4 h 37 m</span></div><div><strong>9</strong><span>simulations</span></div><div><strong>28</strong><span>checkpoint questions</span></div>
+        <div><strong>24</strong><span>lectures</span></div><div><strong>115</strong><span>clips · ~28 h 19 m</span></div><div><strong>9</strong><span>simulations</span></div><div><strong>164</strong><span>checkpoint questions</span></div>
       </div>
     </section>
     <section class="panel"><div class="panel-head"><h2>Choose a lecture</h2><span class="panel-sub">Each opens on its own page.</span></div><div id="lectureCards" class="lecture-cards"></div></section>
@@ -71,7 +71,7 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg
       <p>Use the flashcards and the one-screen equation sheet below, then re-open a lecture page to test yourself on its checkpoints.</p>
     </section>
     <section class="panel" id="equationSheet">
-      <div class="panel-head"><h2>Equation sheet — Lectures 1–4</h2><button class="ghost-btn" onclick="window.print()">Print / save PDF</button></div>
+      <div class="panel-head"><h2>Equation sheet — Lectures 1–24</h2><button class="ghost-btn" onclick="window.print()">Print / save PDF</button></div>
       <div id="sheetGrid"></div>
       <p class="fineprint">Print this page with the Equation sheet tab active for a clean revision sheet.</p>
     </section>

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lecture 13 — Delta potential, node theorem, and the oscillator · 8.04 Companion</title>
+<meta name="description" content="MIT 8.04 Lecture 13: The delta-function bound state, the node theorem, and the harmonic oscillator equation.">
+<link rel="stylesheet" href="assets/style.css">
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body data-lecture="13">
+<script>try{var __w=localStorage.getItem('qm804-width');document.body.dataset.width=(__w==='wide'||__w==='full')?__w:'standard';}catch(e){}</script>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html"><span class="brand-mark">ψ</span><span><strong>8.04 Companion</strong><small>MIT Quantum Physics I · Zwiebach · Spring 2016</small></span></a>
+    <nav class="topnav" aria-label="Modes">
+      <button class="mode-btn is-active" data-mode="follow">Follow along</button>
+      <button class="mode-btn" data-mode="revise">Revision</button>
+      <button class="mode-btn" data-mode="equations">Equation sheet</button>
+    </nav>
+    <div class="width-switch" role="group" aria-label="Page width"><button data-width="standard" title="Standard page width">Standard</button><button data-width="wide" title="Wide page width">Wide</button><button data-width="full" title="Use the full browser width">Full</button></div>
+    <div class="progress-wrap" title="Segments marked done"><div class="progress-track"><div id="progressBar"></div></div><span id="progressLabel">0 / 115</span></div>
+  </div>
+</header>
+
+<div class="layout" id="top">
+  <aside class="sidebar">
+    <div class="side-block">
+      <h2>Lectures 1–24</h2>
+      <p class="side-note">First 115 clips of the <a href="https://www.youtube.com/playlist?list=PLUl4u3cNGP60cspQn3N9dYRPiyVWDd80G" target="_blank" rel="noreferrer">YouTube playlist</a>, grouped as MIT OCW groups them. Each lecture now has its own page. Summaries are written from the lecture transcripts — paraphrased, not quoted at length.</p>
+      <div id="lectureNav"></div>
+    </div>
+    <div class="side-block follow-only">
+      <h3>How to use this</h3>
+      <ol class="howto"><li>Watch a clip (embedded).</li><li>Read the 2-minute summary + equations.</li><li>Play with the simulation.</li><li>Answer the checkpoint, then tick the clip done.</li></ol>
+      <button id="resetProgress" class="ghost-btn">Reset progress</button>
+    </div>
+    <div class="side-block">
+      <h3>Constants</h3>
+      <div class="const-list">
+        <div><span>\(h\)</span><b>6.626×10<sup>−34</sup> J·s</b></div>
+        <div><span>\(\hbar=h/2\pi\)</span><b>1.055×10<sup>−34</sup> J·s</b></div>
+        <div><span>\(\hbar c\)</span><b>197.3 eV·nm</b></div>
+        <div><span>\(hc\)</span><b>1240 eV·nm</b></div>
+        <div><span>\(m_ec^2\)</span><b>0.511 MeV</b></div>
+        <div><span>\(\lambda_{C,e}\)</span><b>2.426 pm</b></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <p class="crumbs"><a href="index.html">Home</a> · Lecture 13 of 24</p>
+    <div id="lectures"></div>
+    <div id="pageNav"></div>
+    <section class="panel" id="equationSheet">
+      <div class="panel-head"><h2>Equation sheet — Lectures 1–24</h2><button class="ghost-btn" onclick="window.print()">Print / save PDF</button></div>
+      <div id="sheetGrid"></div>
+      <p class="fineprint">Print this page with the Equation sheet tab active for a clean revision sheet.</p>
+    </section>
+    <section class="panel revise-only-block" id="flashcards">
+      <div class="panel-head"><h2>Flashcards</h2><span class="panel-sub">Click a card to flip it. Shuffle for a mixed test.</span></div>
+      <div class="flash-tools"><button class="btn btn-dark" id="shuffleCards">Shuffle</button><button class="btn" id="flipAll">Flip all</button><span id="cardCount"></span></div>
+      <div class="flash-grid" id="flashGrid"></div>
+    </section>
+
+    <footer class="footer">
+      <p>Built as a study companion to <a href="https://ocw.mit.edu/courses/8-04-quantum-physics-i-spring-2016/" target="_blank" rel="noreferrer">MIT OCW 8.04 Quantum Physics I (Spring 2016)</a>, Prof. Barton Zwiebach. Videos are embedded from YouTube / MIT OCW. Summaries are original paraphrases prepared from the lectures' transcripts for study use.</p>
+      <p class="fineprint">Static site — no build step. Progress is stored only in your browser (localStorage).</p>
+    </footer>
+
+  </main>
+</div>
+<script src="assets/data.js"></script>
+<script src="assets/sims.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
