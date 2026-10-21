@@ -51,7 +51,7 @@ function render(){
  renderProgress();
 }
 function renderNavTicks(){document.querySelectorAll('.nav-seg').forEach(a=>{const t=a.querySelector('.tick');if(t)t.textContent=done.has(a.dataset.seg)?'✓':''})}
-const WIDTHS=['narrow','standard','full'];
+const WIDTHS=['standard','wide','full'];
 function applyWidth(w){if(!WIDTHS.includes(w))w='standard';document.body.dataset.width=w;try{localStorage.setItem('qm804-width',w)}catch(e){}document.querySelectorAll('.width-switch button').forEach(x=>x.classList.toggle('is-active',x.dataset.width===w))}
 let savedWidth='standard';try{savedWidth=localStorage.getItem('qm804-width')||'standard'}catch(e){}
 applyWidth(savedWidth);
