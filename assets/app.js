@@ -5,13 +5,23 @@
 const $=s=>document.querySelector(s);
 const done=new Set(JSON.parse(localStorage.getItem('qm804-done')||'[]'));
 const PAGE_LECTURE=document.body.dataset.lecture?parseInt(document.body.dataset.lecture,10):null;
+const NAV_COLLAPSE_KEY='qm804-nav-collapsed';
+let navCollapsed;
+try{const raw=localStorage.getItem(NAV_COLLAPSE_KEY);navCollapsed=new Set(raw?JSON.parse(raw):LECTURES.filter(l=>l.id!==PAGE_LECTURE).map(l=>l.id))}catch(e){navCollapsed=new Set()}
+function saveNavCollapsed(){try{localStorage.setItem(NAV_COLLAPSE_KEY,JSON.stringify([...navCollapsed]))}catch(e){}}
+function applyNavState(root){(root||document).querySelectorAll('.nav-lecture[data-lecture]').forEach(box=>{const id=parseInt(box.dataset.lecture,10);const hidden=navCollapsed.has(id);box.classList.toggle('is-collapsed',hidden);const btn=box.querySelector('[data-toggle]');if(btn)btn.setAttribute('aria-expanded',hidden?'false':'true')})}
+function toggleLecture(id,root){navCollapsed.has(id)?navCollapsed.delete(id):navCollapsed.add(id);saveNavCollapsed();applyNavState(root)}
 function lectureHref(l){return `lecture-${l.id}.html`}
 function saveDone(){localStorage.setItem('qm804-done',JSON.stringify([...done]));renderProgress()}
 function renderProgress(){const total=LECTURES.reduce((n,l)=>n+l.segments.length,0);const bar=$('#progressBar'),label=$('#progressLabel');if(bar)bar.style.width=(done.size/total*100)+'%';if(label)label.textContent=`${done.size} / ${total}`;document.querySelectorAll('.nav-seg').forEach(a=>{const c=a.dataset.seg;if(c)a.classList.toggle('done',done.has(c))})}
 function yt(id){return `https://www.youtube-nocookie.com/embed/${id}?rel=0`}
 function render(){
  const nav=$('#lectureNav');
- if(nav)nav.innerHTML=`<div class="nav-lecture"><a href="index.html">Home — all lectures</a></div>`+LECTURES.map(l=>`<div class="nav-lecture"><a href="${lectureHref(l)}" ${PAGE_LECTURE===l.id?'aria-current="page" class="is-current"':''}>Lecture ${l.id} — ${l.title}</a>${l.segments.map(s=>`<a class="nav-seg" data-seg="${s.code}" href="${lectureHref(l)}#seg-${s.code}"><span>${s.code}</span><span>${s.title}</span><span class="tick">${done.has(s.code)?'✓':''}</span></a>`).join('')}</div>`).join('');
+ if(nav){nav.innerHTML=`<div class="nav-tools"><button class="ghost-btn" id="navExpand">Expand all</button><button class="ghost-btn" id="navCollapse">Collapse all</button></div><div class="nav-lecture"><a href="index.html">Home — all lectures</a></div>`+LECTURES.map(l=>{const hidden=navCollapsed.has(l.id);return `<div class="nav-lecture${hidden?' is-collapsed':''}" data-lecture="${l.id}"><div class="nav-lecture-row"><a href="${lectureHref(l)}" ${PAGE_LECTURE===l.id?'aria-current="page" class="is-current"':''}>Lecture ${l.id} — ${l.title}</a><button class="nav-toggle" data-toggle="${l.id}" aria-expanded="${hidden?'false':'true'}" aria-controls="nav-segs-${l.id}" aria-label="Show or hide Lecture ${l.id} sections"><span class="chev" aria-hidden="true">▾</span></button></div><div class="nav-segs" id="nav-segs-${l.id}">${l.segments.map(s=>`<a class="nav-seg" data-seg="${s.code}" href="${lectureHref(l)}#seg-${s.code}"><span>${s.code}</span><span>${s.title}</span><span class="tick">${done.has(s.code)?'✓':''}</span></a>`).join('')}</div></div>`}).join('');
+ nav.querySelectorAll('[data-toggle]').forEach(btn=>btn.addEventListener('click',()=>toggleLecture(parseInt(btn.dataset.toggle,10),document)));
+ const ex=nav.querySelector('#navExpand'),cx=nav.querySelector('#navCollapse');
+ if(ex)ex.addEventListener('click',()=>{navCollapsed.clear();saveNavCollapsed();applyNavState(document)});
+ if(cx)cx.addEventListener('click',()=>{LECTURES.forEach(l=>navCollapsed.add(l.id));saveNavCollapsed();applyNavState(document)});}
  const cards=$('#lectureCards');
  if(cards)cards.innerHTML=LECTURES.map(l=>`<a class="lecture-card" href="${lectureHref(l)}"><span class="lec-label">${l.code} · ${l.runtime}</span><strong>${l.title}</strong><span>${l.sub}</span><span class="card-segs">${l.segments.map(s=>s.code).join(' · ')}</span><span class="card-go">Open Lecture ${l.id} →</span></a>`).join('');
  const host=$('#lectures');

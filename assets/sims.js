@@ -116,15 +116,18 @@ Sims.compton=function(el){const s=simShell(el,"Simulation — Compton scattering
 Sims.debroglie=function(el){const s=simShell(el,"Simulation — de Broglie wavelength λ = h/p","Give any particle a momentum and it carries a wave. Electrons at lab energies land near atomic spacings (hence diffraction); a thrown baseball's wavelength is ~10⁻³⁴ m — no slit will ever reveal it. (Non-relativistic.)",slider('ev','Electron energy',1,1000,1,100,v=>v+' eV')+`<button class="btn" id="dbBase">Compare: baseball (0.15 kg, 40 m/s)</button><span id="dbMsg" style="font-size:13px"></span>`,240);
  let eV=100;
  const draw=()=>{const{w,h}=fit(s.canvas),c=s.ctx;c.clearRect(0,0,w,h);const lamNm=1.227/Math.sqrt(eV); // nm for electrons
-  c.font='13px sans-serif';c.fillStyle='#18202b';c.fillText(`Electron, ${eV} eV →  λ = h/√(2mₑE) ≈ ${lamNm.toFixed(3)} nm`,20,28);c.fillText('Atomic spacing ≈ 0.1–0.4 nm  ·  X-ray λ ≈ 0.01–1 nm  ·  visible light 400–700 nm',20,52);
+  const u=h/240; // vertical scale so the layout survives narrow widths (h shrinks with w)
+  c.font='13px sans-serif';c.fillStyle='#18202b';c.fillText(`Electron, ${eV} eV →  λ = h/√(2mₑE) ≈ ${lamNm.toFixed(3)} nm`,20,Math.max(14,28*u));c.fillText('Atomic spacing ≈ 0.1–0.4 nm  ·  X-ray λ ≈ 0.01–1 nm  ·  visible light 400–700 nm',20,Math.max(28,52*u));
   // log scale ruler
-  const x0=30,x1=w-30,y=120;const lo=-3,hi=3;const X=v=>x0+(Math.log10(v)-lo)/(hi-lo)*(x1-x0);
+  const x0=30,x1=w-30,y=120*u;const lo=-3,hi=3;const X=v=>x0+(Math.log10(v)-lo)/(hi-lo)*(x1-x0);
   c.strokeStyle='#94a3b8';c.beginPath();c.moveTo(x0,y);c.lineTo(x1,y);c.stroke();c.fillStyle='#5b6b7d';c.font='11px sans-serif';
-  [[0.001,'0.001 nm'],[0.01,'0.01'],[0.1,'0.1'],[1,'1 nm'],[10,'10'],[100,'100'],[1000,'1000 nm']].forEach(([v,t])=>{c.beginPath();c.moveTo(X(v),y-5);c.lineTo(X(v),y+5);c.stroke();c.fillText(t,X(v)-14,y+22)});
-  const mk=(v,col,label,yy)=>{c.fillStyle=col;c.beginPath();c.arc(X(v),yy,6,0,7);c.fill();c.fillText(label,X(v)-30,yy-12)};
-  mk(lamNm,'#0f766e','electron λ',y-28);mk(0.2,'#b7791f','lattice',y+42);mk(550,'#b42318','green light',y-58);
-  // wave sketch
-  c.strokeStyle='#145da0';c.lineWidth=2;c.beginPath();for(let x=0;x<w-60;x++){const yy=190+16*Math.sin(x/(8+lamNm*30));x?c.lineTo(30+x,yy):c.moveTo(30+x,yy)}c.stroke();
+  const ticks=w<560?[[0.001,'0.001 nm'],[0.1,'0.1'],[1,'1 nm'],[10,'10'],[1000,'1000 nm']]:[[0.001,'0.001 nm'],[0.01,'0.01'],[0.1,'0.1'],[1,'1 nm'],[10,'10'],[100,'100'],[1000,'1000 nm']];
+  ticks.forEach(([v,t])=>{c.beginPath();c.moveTo(X(v),y-5*u);c.lineTo(X(v),y+5*u);c.stroke();c.fillText(t,Math.min(Math.max(X(v)-14,2),w-52),y+22*u)});
+  const mk=(v,col,label,yy)=>{c.fillStyle=col;c.beginPath();c.arc(X(v),yy,Math.max(4,6*u),0,7);c.fill();c.fillText(label,Math.min(Math.max(X(v)-30,4),w-72),yy-12*u)};
+  mk(lamNm,'#0f766e','electron λ',y-28*u);mk(0.2,'#b7791f','lattice',y+42*u);mk(550,'#b42318','visible light',y-58*u);
+  // wave sketch (kept clear of the tick labels by construction: tick labels end at y+22u, wave starts at yw-amp)
+  const yw=190*u,amp=16*u;
+  c.strokeStyle='#145da0';c.lineWidth=2;c.beginPath();for(let x=0;x<w-60;x++){const yy=yw+amp*Math.sin(x/(8+lamNm*30));x?c.lineTo(30+x,yy):c.moveTo(30+x,yy)}c.stroke();
   s.readout.innerHTML=`<div>E <b>${eV} eV</b></div><div>λ<sub>dB</sub> <b>${lamNm.toFixed(3)} nm</b></div><div>p <b>${(Math.sqrt(2*9.11e-31*eV*1.602e-19)).toExponential(2)} kg·m/s</b></div>`};
  bindRange(el,'ev',v=>{eV=v;draw()});
  el.querySelector('#dbBase').onclick=()=>{const lam=6.626e-34/(0.15*40);el.querySelector('#dbMsg').textContent=` Baseball λ = h/(mv) ≈ ${lam.toExponential(1)} m — about 10²⁴ times smaller than an atom. No diffraction, ever.`};

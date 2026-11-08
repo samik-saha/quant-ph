@@ -24,6 +24,14 @@ body[data-width="full"] .layout{padding-left:28px;padding-right:28px}
 .side-block h2{font-size:16px;margin:0 0 6px}.side-block h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 8px}
 .side-note,.howto{font-size:13px;color:#3d4c5e}.howto{padding-left:18px;margin:8px 0}
 .nav-lecture{margin:12px 0}.nav-lecture>a{font-weight:700;color:var(--ink);text-decoration:none;font-size:14px}
+.nav-tools{display:flex;gap:8px;margin:4px 0 6px}
+.nav-lecture-row{display:flex;align-items:center;gap:6px}
+.nav-lecture-row>a{flex:1;font-weight:700;color:var(--ink);text-decoration:none;font-size:14px;min-width:0}
+.nav-toggle{background:#fff;border:1px solid var(--line);border-radius:6px;padding:2px 9px;font-size:13px;line-height:1.4;color:#334155}
+.nav-toggle:hover{background:#f1f5f9}
+.nav-toggle .chev{display:inline-block;transition:transform .15s ease}
+.nav-lecture.is-collapsed .nav-toggle .chev{transform:rotate(-90deg)}
+.nav-lecture.is-collapsed .nav-segs{display:none}
 .nav-seg{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border-radius:6px;text-decoration:none;color:#334155;font-size:13px}
 .nav-seg:hover{background:#f1f5f9}.nav-seg.done{color:var(--teal)}.nav-seg .tick{margin-left:auto;font-weight:700}
 .const-list{display:grid;gap:6px;font-size:13px}.const-list div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed var(--line);padding-bottom:5px}
