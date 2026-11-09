@@ -22,7 +22,7 @@ Interactive web companion to MIT OCW **8.04 Quantum Physics I** (Prof. Barton Zw
 node --test tests/
 ```
 
-Covers the simulation canvas-sizing regression: redrawing a simulation (moving any control) must never change the canvas size.
+Covers the simulation canvas-sizing regression (redrawing a simulation must never change the canvas size) and the animation policy: simulations start paused and auto-pause after 30 s of playback.
 
 ## Run locally
 

@@ -7,6 +7,14 @@ function simShell(el,title,desc,controlsHTML,canvasH){
 function slider(id,label,min,max,step,val,fmt){return `<label class="control">${label} <output id="${id}Out">${fmt(val)}</output><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${val}"></label>`}
 function bindRange(root,id,fn){const i=root.querySelector('#'+id),o=root.querySelector('#'+id+'Out');const h=()=>{const v=parseFloat(i.value);if(o)o.textContent=i.dataset.fmt?i.dataset.fmt.replace('{}',v):v;fn(v)};i.addEventListener('input',h);h();return i}
 function fit(canvas){if(!canvas.dataset.baseH)canvas.dataset.baseH=String(parseInt(canvas.getAttribute('height'))||240);const baseH=Number(canvas.dataset.baseH),r=canvas.getBoundingClientRect(),d=devicePixelRatio||1,w=r.width||860,h=w*baseH/860;canvas.width=Math.round(w*d);canvas.height=Math.round(h*d);canvas.style.height=h+'px';canvas.getContext('2d').setTransform(d,0,0,d,0,0);return{w,h}}
+/* Animations are paused by default and auto-pause after this long, so a
+   forgotten Play cannot keep requestAnimationFrame burning CPU forever. */
+const ANIM_TIMEOUT_MS=30000;
+function makeAnim(tick,onState){let playing=false,rafId=null,timer=null;
+ const stop=()=>{if(!playing)return;playing=false;if(rafId!==null&&typeof cancelAnimationFrame==='function')cancelAnimationFrame(rafId);rafId=null;if(timer!==null&&typeof clearTimeout==='function')clearTimeout(timer);timer=null;if(onState)onState(false)};
+ const frame=()=>{rafId=null;if(!playing)return;tick();if(playing&&typeof requestAnimationFrame==='function')rafId=requestAnimationFrame(frame)};
+ const start=()=>{if(playing)return;playing=true;if(typeof setTimeout==='function')timer=setTimeout(stop,ANIM_TIMEOUT_MS);if(onState)onState(true);if(typeof requestAnimationFrame==='function')rafId=requestAnimationFrame(frame);else frame()};
+ return{start,stop,toggle:()=>{playing?stop():start()},isPlaying:()=>playing}}
 /* ---- Polarizer + single photon counting ---- */
 Sims.polarizer=function(el){const s=simShell(el,"Simulation — Malus's law, one photon at a time","Drag α. The bar is the classical intensity fraction cos²α; the dots are individual photons — each one wholly passes or is absorbed. Watch the fraction settle to cos²α only after many photons.",slider('alpha','Polarisation angle α',0,90,1,35,v=>v+'°')+`<button class="btn btn-dark" id="fire">Fire 200 photons</button><button class="btn" id="clearDots">Clear</button>`,260);
  let alpha=35*Math.PI/180,passed=0,total=0,dots=[];
@@ -24,8 +32,8 @@ Sims.polarizer=function(el){const s=simShell(el,"Simulation — Malus's law, one
  el.querySelector('#fire').onclick=()=>{const p=Math.cos(alpha)**2;for(let i=0;i<200;i++){const ok=Math.random()<p;dots.push(ok);total++;if(ok)passed++}draw()};
  el.querySelector('#clearDots').onclick=()=>{dots=[];passed=0;total=0;draw()};draw();};
 /* ---- Phasor / complex plane ---- */
-Sims.phasor=function(el){const s=simShell(el,"Simulation — a complex amplitude is an arrow","A probability amplitude ψ = |ψ|e^{iθ} lives on the complex plane. Probabilities use only the length squared; interference (Lecture 2) uses the angle. Animate the phase and watch Re, Im and |ψ|².",slider('theta','Phase θ',0,360,1,40,v=>v+'°')+`<button class="btn btn-dark" id="playPh">▶ Rotate phase</button>`,260);
- let th=40*Math.PI/180,playing=false;
+Sims.phasor=function(el){const s=simShell(el,"Simulation — a complex amplitude is an arrow","A probability amplitude ψ = |ψ|e^{iθ} lives on the complex plane. Probabilities use only the length squared; interference (Lecture 2) uses the angle. Animate the phase and watch Re, Im and |ψ|². Paused by default; playback auto-pauses after 30 s.",slider('theta','Phase θ',0,360,1,40,v=>v+'°')+`<button class="btn btn-dark" id="playPh">▶ Rotate phase</button>`,260);
+ let th=40*Math.PI/180;
  const draw=()=>{const{w,h}=fit(s.canvas),c=s.ctx;c.clearRect(0,0,w,h);const cx=w*0.32,cy=h/2,R=Math.min(w,h)*0.36;
   c.strokeStyle='#d9e0e8';c.beginPath();c.arc(cx,cy,R,0,7);c.stroke();c.beginPath();c.moveTo(cx-R-20,cy);c.lineTo(cx+R+20,cy);c.moveTo(cx,cy-R-20);c.lineTo(cx,cy+R+20);c.stroke();
   c.fillStyle='#5b6b7d';c.font='12px sans-serif';c.fillText('Re',cx+R+22,cy);c.fillText('Im',cx+6,cy-R-8);
@@ -34,7 +42,9 @@ Sims.phasor=function(el){const s=simShell(el,"Simulation — a complex amplitude
   const re=Math.cos(th),im=Math.sin(th);c.fillStyle='#18202b';c.font='14px sans-serif';c.fillText(`ψ = cosθ + i sinθ = e^{iθ}`,w*0.58,60);c.fillText(`Re ψ = ${re.toFixed(3)}`,w*0.58,90);c.fillText(`Im ψ = ${im.toFixed(3)}`,w*0.58,115);c.fillText(`|ψ|² = ψψ* = ${(re*re+im*im).toFixed(3)}  ← the measurable probability weight`,w*0.58,150);c.fillText('Rotating θ changes nothing measurable — until ψ interferes with another amplitude.',w*0.58,185);
   s.readout.innerHTML=`<div>θ <b>${(th*180/Math.PI%360).toFixed(0)}°</b></div><div>|ψ| <b>1.000</b></div><div>|ψ|² <b>1.000</b></div>`};
  bindRange(el,'theta',v=>{th=v*Math.PI/180;draw()});
- el.querySelector('#playPh').onclick=e=>{playing=!playing;e.target.textContent=playing?'⏸ Pause':'▶ Rotate phase';const step=()=>{if(!playing)return;th+=0.03;const i=el.querySelector('#theta');if(i){i.value=(th*180/Math.PI)%360;i.dispatchEvent(new Event('input'))}requestAnimationFrame(step)};if(playing)step()};
+ const playPhBtn=el.querySelector('#playPh');
+ const animPh=makeAnim(()=>{th+=0.03;const i=el.querySelector('#theta');if(i)i.value=String((th*180/Math.PI)%360);const o=el.querySelector('#thetaOut');if(o)o.textContent=String((th*180/Math.PI)%360);draw()},playing=>{if(playPhBtn)playPhBtn.textContent=playing?'⏸ Pause':'▶ Rotate phase'});
+ if(playPhBtn)playPhBtn.onclick=()=>animPh.toggle();
  draw();};
 /* ---- Superposition measurement ---- */
 Sims.superposition=function(el){const s=simShell(el,"Simulation — measuring αA + βB never gives an average","Choose |α|. Each 'Measure' collapses the state to A (prob |α|²) or B (prob |β|²). Run many trials: the histogram converges to |α|² : |β|² — and no bar ever appears in between.",slider('ab','|α| (amplitude of A)',0,1,0.01,0.6,v=>Number(v).toFixed(2))+`<button class="btn btn-dark" id="meas1">Measure ×1</button><button class="btn" id="meas100">Measure ×200</button><button class="btn" id="measClear">Clear</button>`,240);
@@ -133,8 +143,8 @@ Sims.debroglie=function(el){const s=simShell(el,"Simulation — de Broglie wavel
  el.querySelector('#dbBase').onclick=()=>{const lam=6.626e-34/(0.15*40);el.querySelector('#dbMsg').textContent=` Baseball λ = h/(mv) ≈ ${lam.toExponential(1)} m — about 10²⁴ times smaller than an atom. No diffraction, ever.`};
  draw();};
 /* ---- Wavepacket: beats, group velocity, rigid motion + spreading ---- */
-Sims.wavepacket=function(el){const s=simShell(el,"Simulation — beats make a packet: phase vs group velocity","Two nearby plane waves with matter dispersion ω = k²/2 (units ħ = m = 1) beat into an envelope. The ripples slide at phase velocity v_ph = k/2 while the envelope — and the Gaussian packet below — travel at group velocity v_g = k. Uncheck spreading to see L4.5's rigid first-order motion; check it for the quadratic-term distortion.",slider('k0','Central wave number k₀',0.6,2.6,0.05,1.6,v=>Number(v).toFixed(2))+slider('dk','Spread Δk',0.1,0.9,0.05,0.35,v=>Number(v).toFixed(2))+`<label class="control"><input type="checkbox" id="spread" checked> spreading (quadratic term)</label><button class="btn btn-dark" id="wpPlay">⏸ Pause</button>`,340);
- let k0=1.6,dk=0.35,spread=true,t=0,playing=true;
+Sims.wavepacket=function(el){const s=simShell(el,"Simulation — beats make a packet: phase vs group velocity","Two nearby plane waves with matter dispersion ω = k²/2 (units ħ = m = 1) beat into an envelope. The ripples slide at phase velocity v_ph = k/2 while the envelope — and the Gaussian packet below — travel at group velocity v_g = k. Uncheck spreading to see L4.5's rigid first-order motion; check it for the quadratic-term distortion. Paused by default; playback auto-pauses after 30 s.",slider('k0','Central wave number k₀',0.6,2.6,0.05,1.6,v=>Number(v).toFixed(2))+slider('dk','Spread Δk',0.1,0.9,0.05,0.35,v=>Number(v).toFixed(2))+`<label class="control"><input type="checkbox" id="spread" checked> spreading (quadratic term)</label><button class="btn btn-dark" id="wpPlay">▶ Play</button>`,340);
+ let k0=1.6,dk=0.35,spread=true,t=0;
  const Xmax=24;
  const draw=()=>{const{w,h}=fit(s.canvas),c=s.ctx;c.clearRect(0,0,w,h);
   const k1=Math.max(0.05,k0-dk/2),k2=k0+dk/2,w1=k1*k1/2,w2=k2*k2/2,wb=(w1+w2)/2,kb=(k1+k2)/2,vg=k0,vph=wb/kb;
@@ -167,6 +177,7 @@ Sims.wavepacket=function(el){const s=simShell(el,"Simulation — beats make a pa
  bindRange(el,'k0',v=>{k0=v;draw()});
  bindRange(el,'dk',v=>{dk=v;draw()});
  el.querySelector('#spread').addEventListener('change',e=>{spread=e.target.checked;draw()});
- el.querySelector('#wpPlay').onclick=e=>{playing=!playing;e.target.textContent=playing?'⏸ Pause':'▶ Play';if(playing)step()};
- const step=()=>{if(!playing)return;t+=0.06;draw();requestAnimationFrame(step)};
- draw();step();};
+ const wpPlayBtn=el.querySelector('#wpPlay');
+ const animWp=makeAnim(()=>{t+=0.06;draw()},playing=>{if(wpPlayBtn)wpPlayBtn.textContent=playing?'⏸ Pause':'▶ Play'});
+ if(wpPlayBtn)wpPlayBtn.onclick=()=>animWp.toggle();
+ draw();};
