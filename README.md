@@ -7,7 +7,7 @@ Interactive web companion to MIT OCW **8.04 Quantum Physics I** (Prof. Barton Zw
 ## What is inside
 
 - **Follow-along notes** for each of the 115 clips: embedded (privacy-enhanced) YouTube video, plain-English summary, full equations (MathJax), and a one-line takeaway.
-- **9 interactive simulations** (vanilla canvas, no build step): Malus's law with single-photon counting, complex phasor, superposition measurement, Mach–Zehnder interferometer (phase + blocked arm), Elitzur–Vaidman bomb tester, photoelectric effect, Compton scattering, de Broglie wavelength, and wavepacket (phase vs group velocity, rigid motion + spreading) — reused wherever they fit later lectures.
+- **11 interactive simulations** (vanilla canvas, no build step): Malus's law with single-photon counting, complex phasor, superposition measurement, Mach–Zehnder interferometer (phase + blocked arm), Elitzur–Vaidman bomb tester, photoelectric effect, Compton scattering, de Broglie wavelength, wavepacket (phase vs group velocity, rigid motion + spreading, segment presets, stationary-phase panel), Galilean boost (ordinary vs matter wave), and candidate free-particle waves (sin/cos vs \(e^{i(kx-\omega t)}\)) — reused wherever they fit later lectures.
 - **Checkpoint quizzes** (164 questions) with instant explanations, plus a per-clip "mark done" progress tracker (localStorage only).
 - **Revision mode**: flashcards, a printable one-screen equation sheet, and collapsed explanations.
 
@@ -22,7 +22,7 @@ Interactive web companion to MIT OCW **8.04 Quantum Physics I** (Prof. Barton Zw
 node --test tests/
 ```
 
-Covers the simulation canvas-sizing regression (redrawing a simulation must never change the canvas size) and the animation policy: simulations start paused and auto-pause after 30 s of playback.
+Covers the simulation canvas-sizing regression (redrawing a simulation must never change the canvas size), the animation policy (simulations start paused and auto-pause after 30 s of playback), wavepacket/de Broglie correctness (spreading rate and normalisation, \(v_{ph}=k_0/2\) labelling, crest spacing proportional to λ), segment-aware wavepacket presets (e.g. spreading off for L4.5's rigid motion, on for L7.5's free evolution), and the Lecture 4 sims (boost λ-invariance contrast, L4.4 stationary-phase panel, L4.6 sine-vs-exponential vanishing test).
 
 ## Run locally
 

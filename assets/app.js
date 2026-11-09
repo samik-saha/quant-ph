@@ -53,7 +53,7 @@ function render(){
  if(sheet)sheet.innerHTML=`<div class="sheet-grid">${SHEET.map(s=>`<div class="sheet-card"><h3>${s[0]}</h3><div class="eq">${s[1]}</div></div>`).join('')}</div>`;
  const flash=$('#flashGrid');
  if(flash){flash.innerHTML=FLASHCARDS.map((f,i)=>`<button class="flash" data-card="${i}"><span class="front">${f[0]}</span><span class="back">${f[1]}</span></button>`).join('');const cc=$('#cardCount');if(cc)cc.textContent=FLASHCARDS.length+' cards'}
- document.querySelectorAll('[data-sim]').forEach(el=>{const fn=Sims[el.dataset.sim];if(fn)try{fn(el)}catch(e){el.innerHTML='<p>Simulation failed to load: '+e.message+'</p>'}});
+ document.querySelectorAll('[data-sim]').forEach(el=>{const fn=Sims[el.dataset.sim];if(fn)try{fn(el,el.dataset.seg)}catch(e){el.innerHTML='<p>Simulation failed to load: '+e.message+'</p>'}});
  document.querySelectorAll('[data-done]').forEach(cb=>cb.addEventListener('change',()=>{cb.checked?done.add(cb.dataset.done):done.delete(cb.dataset.done);saveDone();renderNavTicks()}));
  document.querySelectorAll('.quiz').forEach(qz=>{const code=qz.dataset.quiz;qz.querySelectorAll('.q').forEach(qEl=>{const q=QUIZZES[code][+qEl.dataset.q];qEl.querySelectorAll('.opt').forEach(btn=>btn.addEventListener('click',()=>{const fb=qEl.querySelector('.feedback');const ok=+btn.dataset.opt===q.a;qEl.querySelectorAll('.opt').forEach(b=>b.classList.remove('correct','wrong'));btn.classList.add(ok?'correct':'wrong');if(!ok)qEl.querySelectorAll('.opt')[q.a].classList.add('correct');fb.hidden=false;fb.className='feedback '+(ok?'ok':'no');fb.textContent=(ok?'✓ Correct. ':'✗ Not quite. ')+q.why}))})});
  document.querySelectorAll('.flash').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('flipped')));

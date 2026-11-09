@@ -136,22 +136,43 @@ Sims.debroglie=function(el){const s=simShell(el,"Simulation — de Broglie wavel
   const mk=(v,col,label,yy)=>{c.fillStyle=col;c.beginPath();c.arc(X(v),yy,Math.max(4,6*u),0,7);c.fill();c.fillText(label,Math.min(Math.max(X(v)-30,4),w-72),yy-12*u)};
   mk(lamNm,'#0f766e','electron λ',y-28*u);mk(0.2,'#b7791f','lattice',y+42*u);mk(550,'#b42318','visible light',y-58*u);
   // wave sketch (kept clear of the tick labels by construction: tick labels end at y+22u, wave starts at yw-amp)
-  const yw=190*u,amp=16*u;
-  c.strokeStyle='#145da0';c.lineWidth=2;c.beginPath();for(let x=0;x<w-60;x++){const yy=yw+amp*Math.sin(x/(8+lamNm*30));x?c.lineTo(30+x,yy):c.moveTo(30+x,yy)}c.stroke();
+  const yw=190*u,amp=16*u,periodPx=Math.max(4,lamNm*200);
+  c.fillStyle='#5b6b7d';c.font='11px sans-serif';c.fillText('wave sketch — crest spacing ∝ λ (200 px per nm)',30,Math.min(h-4,222*u));
+  c.strokeStyle='#145da0';c.lineWidth=2;c.beginPath();for(let x=0;x<w-60;x++){const yy=yw+amp*Math.sin(2*Math.PI*x/periodPx);x?c.lineTo(30+x,yy):c.moveTo(30+x,yy)}c.stroke();
   s.readout.innerHTML=`<div>E <b>${eV} eV</b></div><div>λ<sub>dB</sub> <b>${lamNm.toFixed(3)} nm</b></div><div>p <b>${(Math.sqrt(2*9.11e-31*eV*1.602e-19)).toExponential(2)} kg·m/s</b></div>`};
  bindRange(el,'ev',v=>{eV=v;draw()});
  el.querySelector('#dbBase').onclick=()=>{const lam=6.626e-34/(0.15*40);el.querySelector('#dbMsg').textContent=` Baseball λ = h/(mv) ≈ ${lam.toExponential(1)} m — about 10²⁴ times smaller than an atom. No diffraction, ever.`};
  draw();};
 /* ---- Wavepacket: beats, group velocity, rigid motion + spreading ---- */
-Sims.wavepacket=function(el){const s=simShell(el,"Simulation — beats make a packet: phase vs group velocity","Two nearby plane waves with matter dispersion ω = k²/2 (units ħ = m = 1) beat into an envelope. The ripples slide at phase velocity v_ph = k/2 while the envelope — and the Gaussian packet below — travel at group velocity v_g = k. Uncheck spreading to see L4.5's rigid first-order motion; check it for the quadratic-term distortion. Paused by default; playback auto-pauses after 30 s.",slider('k0','Central wave number k₀',0.6,2.6,0.05,1.6,v=>Number(v).toFixed(2))+slider('dk','Spread Δk',0.1,0.9,0.05,0.35,v=>Number(v).toFixed(2))+`<label class="control"><input type="checkbox" id="spread" checked> spreading (quadratic term)</label><button class="btn btn-dark" id="wpPlay">▶ Play</button>`,340);
- let k0=1.6,dk=0.35,spread=true,t=0;
+const WP_PRESETS={
+ 'L4.3':{k0:1.6,dk:0.35,spread:false,note:'Preset for L4.3: spreading off, so phase vs group velocity is the whole story.'},
+ 'L4.4':{k0:1.6,dk:0.25,spread:false,stationary:true,note:'Preset for L4.4: narrow Δk and spreading off, with the stationary-phase panel on top.'},
+ 'L4.5':{k0:1.6,dk:0.35,spread:false,note:"Preset for L4.5: spreading off — this clip's rigid first-order motion. Check the box to add the quadratic term."},
+ 'L7.1':{k0:1.6,dk:0.5,spread:false,note:'Preset for L7.1: wider Δk (narrower packet) and spreading off, to focus on Fourier construction.'},
+ 'L7.5':{k0:1.6,dk:0.35,spread:true,note:'Preset for L7.5: spreading on — a free packet travels and broadens.'}};
+Sims.wavepacket=function(el,seg){const preset=WP_PRESETS[seg]||{k0:1.6,dk:0.35,spread:true,note:''};
+ const s=simShell(el,"Simulation — beats make a packet: phase vs group velocity","Two nearby plane waves with matter dispersion ω = k²/2 (units ħ = m = 1) beat into an envelope. The ripples slide at phase velocity v_ph = k/2 while the envelope — and the Gaussian packet below — travel at group velocity v_g = k. Toggle spreading to add the quadratic-term distortion. Paused by default; playback auto-pauses after 30 s."+(preset.note?' '+preset.note:''),slider('k0','Central wave number k₀',0.6,2.6,0.05,preset.k0,v=>Number(v).toFixed(2))+slider('dk','Spread Δk',0.1,0.9,0.05,preset.dk,v=>Number(v).toFixed(2))+`<label class="control"><input type="checkbox" id="spread"${preset.spread?' checked':''}> spreading (quadratic term)</label><button class="btn btn-dark" id="wpPlay">▶ Play</button>`,340);
+ let k0=preset.k0,dk=preset.dk,spread=preset.spread,t=0;const stationary=!!preset.stationary;
  const Xmax=24;
  const draw=()=>{const{w,h}=fit(s.canvas),c=s.ctx;c.clearRect(0,0,w,h);
   const k1=Math.max(0.05,k0-dk/2),k2=k0+dk/2,w1=k1*k1/2,w2=k2*k2/2,wb=(w1+w2)/2,kb=(k1+k2)/2,vg=k0,vph=wb/kb;
   const pad=30,X=x=>pad+(x/Xmax)*(w-2*pad);
   c.font='12px sans-serif';
-  // --- top: two-wave beat + envelope ---
+  // --- top: two-wave beat + envelope (or stationary-phase panel for L4.4) ---
   const yT=h*0.26,A=h*0.12;
+  if(stationary){
+  c.fillStyle='#18202b';c.fillText('stationary phase: φ(k) weights the packet (left) · phase slope d/dk (kx − ω(k)t) vanishes at k₀ (right)',pad,18);
+  const kMin=Math.max(0.05,k0-1.2),kMax=k0+1.2,yPhi=yT+A*0.75;
+  const K1=k=>pad+((k-kMin)/(kMax-kMin))*(w*0.36-pad),K2=k=>w*0.54+((k-kMin)/(kMax-kMin))*(w-pad-w*0.54);
+  c.strokeStyle='#d9e0e8';c.beginPath();c.moveTo(pad,yPhi);c.lineTo(w*0.36,yPhi);c.moveTo(w*0.54,yT);c.lineTo(w-pad,yT);c.stroke();
+  c.strokeStyle='#0f766e';c.lineWidth=2;c.beginPath();for(let i=0;i<=120;i++){const k=kMin+(kMax-kMin)*i/120,e=Math.exp(-((k-k0)*(k-k0))/(2*dk*dk));i?c.lineTo(K1(k),yPhi-e*A*0.95):c.moveTo(K1(k),yPhi-e*A*0.95)}c.stroke();c.lineWidth=1;
+  c.setLineDash([4,4]);c.strokeStyle='#b7791f';c.beginPath();c.moveTo(K1(k0),yPhi);c.lineTo(K1(k0),yPhi-A);c.moveTo(K2(k0),yT-A*0.8);c.lineTo(K2(k0),yT+A*0.8);c.stroke();c.setLineDash([]);
+  const tilt=Math.max(t,0.001),norm=1.2*Math.max(t,1);
+  c.strokeStyle='#145da0';c.lineWidth=2;c.beginPath();for(let i=0;i<=120;i++){const k=kMin+(kMax-kMin)*i/120,sv=Math.max(-1,Math.min(1,((k0-k)*tilt)/norm));i?c.lineTo(K2(k),yT-sv*A*0.75):c.moveTo(K2(k),yT-sv*A*0.75)}c.stroke();c.lineWidth=1;
+  c.fillStyle='#0f766e';c.beginPath();c.arc(K2(k0),yT,4,0,7);c.fill();c.fillText('φ(k)',K1(k0)+8,yPhi-A*0.75);c.fillText('k₀',K1(k0)-4,yPhi+14);
+  c.fillStyle='#18202b';c.fillText('d/dk (kx − ω(k)t)',w*0.54,yT-A*0.95);c.fillText('stationary at k₀: slope = 0 → hump at x = v_g t',w*0.54,yT+A*1.05);
+  if(t<0.01)c.fillText('(t = 0: slope is flat — play, and the line tilts while its zero stays at k₀)',w*0.54,yT+A*1.3);
+  }else{
   c.fillStyle='#18202b';c.fillText('beat of two plane waves k₁, k₂ — sum (blue), envelope (green)',pad,18);
   c.strokeStyle='#d9e0e8';c.beginPath();c.moveTo(pad,yT);c.lineTo(w-pad,yT);c.stroke();
   c.setLineDash([4,4]);c.strokeStyle='#0f766e';c.beginPath();for(let i=0;i<=240;i++){const x=i/240*Xmax,e=2*Math.cos(dk*(x-vg*t)/2);i?c.lineTo(X(x),yT-e*A*0.5):c.moveTo(X(x),yT-e*A*0.5)}c.stroke();c.beginPath();for(let i=0;i<=240;i++){const x=i/240*Xmax,e=2*Math.cos(dk*(x-vg*t)/2);i?c.lineTo(X(x),yT+e*A*0.5):c.moveTo(X(x),yT+e*A*0.5)}c.stroke();c.setLineDash([]);
@@ -160,24 +181,78 @@ Sims.wavepacket=function(el){const s=simShell(el,"Simulation — beats make a pa
   const n=Math.round((kb*Xmax/2-wb*t)/(2*Math.PI)),xc=(wb*t+2*Math.PI*n)/kb;
   c.strokeStyle='#0f766e';c.beginPath();c.moveTo(X(xe),yT-A*0.8);c.lineTo(X(xe),yT+A*0.8);c.stroke();
   c.fillStyle='#0f766e';c.fillText('envelope peak → v_g',Math.min(X(xe)+6,w-150),yT-A*0.8);
-  if(xc>=0&&xc<=Xmax){c.strokeStyle='#b7791f';c.setLineDash([3,3]);c.beginPath();c.moveTo(X(xc),yT-A*0.8);c.lineTo(X(xc),yT+A*0.8);c.stroke();c.setLineDash([]);c.fillStyle='#b7791f';c.fillText('ripple crest → v_ph',Math.min(X(xc)+6,w-140),yT+A*0.95)}
+  if(xc>=0&&xc<=Xmax){c.strokeStyle='#b7791f';c.setLineDash([3,3]);c.beginPath();c.moveTo(X(xc),yT-A*0.8);c.lineTo(X(xc),yT+A*0.8);c.stroke();c.setLineDash([]);c.fillStyle='#b7791f';c.fillText('carrier crest → ω̄/k̄',Math.min(X(xc)+6,w-140),yT+A*0.95)}
+  }
   // --- bottom: Gaussian packet with carrier ---
   const yB=h*0.74,B=h*0.16,C=Xmax+8,tLoc=((vg*t)%C+C)%C/vg,xp=(vg*tLoc)-4;
-  const s0=2/dk,sig=spread?Math.sqrt(s0*s0+(dk*tLoc)*(dk*tLoc)):s0;
+  const s0=2/dk,sig=spread?Math.sqrt(s0*s0+(tLoc/(2*s0))**2):s0,ampScale=sig>0?Math.sqrt(s0/sig):1;
   c.fillStyle='#18202b';c.fillText('Gaussian packet: ripples slide inside an envelope that rides at v_g'+(spread?' (spreading on)':' (rigid: first-order motion)'),pad,h*0.47);
   c.strokeStyle='#d9e0e8';c.beginPath();c.moveTo(pad,yB);c.lineTo(w-pad,yB);c.stroke();
   c.fillStyle='rgba(15,118,110,0.15)';c.beginPath();
-  for(let i=0;i<=240;i++){const x=i/240*Xmax,e=Math.exp(-((x-xp)*(x-xp))/(2*sig*sig));i?c.lineTo(X(x),yB-e*e*B):c.moveTo(X(x),yB-e*e*B)}
+  for(let i=0;i<=240;i++){const x=i/240*Xmax,e=Math.exp(-((x-xp)*(x-xp))/(2*sig*sig));i?c.lineTo(X(x),yB-e*e*B*ampScale*ampScale):c.moveTo(X(x),yB-e*e*B*ampScale*ampScale)}
   for(let i=240;i>=0;i--){const x=i/240*Xmax;c.lineTo(X(x),yB)}
   c.closePath();c.fill();
-  c.setLineDash([4,4]);c.strokeStyle='#0f766e';c.beginPath();for(let i=0;i<=240;i++){const x=i/240*Xmax,e=Math.exp(-((x-xp)*(x-xp))/(2*sig*sig));i?c.lineTo(X(x),yB-e*B):c.moveTo(X(x),yB-e*B)}c.stroke();c.setLineDash([]);
+  c.setLineDash([4,4]);c.strokeStyle='#0f766e';c.beginPath();for(let i=0;i<=240;i++){const x=i/240*Xmax,e=Math.exp(-((x-xp)*(x-xp))/(2*sig*sig));i?c.lineTo(X(x),yB-e*B*ampScale):c.moveTo(X(x),yB-e*B*ampScale)}c.stroke();c.setLineDash([]);
   const w0=k0*k0/2;
-  c.strokeStyle='#145da0';c.lineWidth=2;c.beginPath();for(let i=0;i<=240;i++){const x=i/240*Xmax,e=Math.exp(-((x-xp)*(x-xp))/(2*sig*sig)),y=e*Math.cos(k0*x-w0*t);i?c.lineTo(X(x),yB-y*B):c.moveTo(X(x),yB-y*B)}c.stroke();c.lineWidth=1;
-  s.readout.innerHTML=`<div>v_ph = k/2 <b>${vph.toFixed(3)}</b></div><div>v_g = k <b>${vg.toFixed(3)}</b></div><div>envelope width σ <b>${sig.toFixed(2)} (σ₀ ${s0.toFixed(2)})</b></div><div>t <b>${t.toFixed(1)}</b></div>`};
+  c.strokeStyle='#145da0';c.lineWidth=2;c.beginPath();for(let i=0;i<=240;i++){const x=i/240*Xmax,e=Math.exp(-((x-xp)*(x-xp))/(2*sig*sig)),y=e*ampScale*Math.cos(k0*x-w0*t);i?c.lineTo(X(x),yB-y*B):c.moveTo(X(x),yB-y*B)}c.stroke();c.lineWidth=1;
+  s.readout.innerHTML=`<div>v_ph = k₀/2 <b>${(k0/2).toFixed(3)}</b></div><div>beat carrier ω̄/k̄ <b>${vph.toFixed(3)}</b></div><div>v_g = k₀ <b>${vg.toFixed(3)}</b></div><div>envelope width σ <b>${sig.toFixed(2)} (σ₀ ${s0.toFixed(2)})</b></div><div>t <b>${t.toFixed(1)}</b></div>`};
  bindRange(el,'k0',v=>{k0=v;draw()});
  bindRange(el,'dk',v=>{dk=v;draw()});
  el.querySelector('#spread').addEventListener('change',e=>{spread=e.target.checked;draw()});
  const wpPlayBtn=el.querySelector('#wpPlay');
- const animWp=makeAnim(()=>{t+=0.06;draw()},playing=>{if(wpPlayBtn)wpPlayBtn.textContent=playing?'⏸ Pause':'▶ Play'});
+ const animWp=makeAnim(()=>{t+=0.06;const cyc=(Xmax+8)/k0;if(t>=cyc)t-=cyc;draw()},playing=>{if(wpPlayBtn)wpPlayBtn.textContent=playing?'⏸ Pause':'▶ Play'});
  if(wpPlayBtn)wpPlayBtn.onclick=()=>animWp.toggle();
+ draw();};
+/* ---- Galilean boost: ordinary wave vs matter wave (L4.2) ---- */
+Sims.boost=function(el){const s=simShell(el,"Simulation — running past a wave: what changes, λ or ω?","Photograph the crests from a frame S′ moving at V. An ordinary wave (sound, water) keeps its crest spacing — only its frequency shifts, because its phase Φ = kx − ωt is the same event for every observer and k′ = k. A matter wave is different: the boost sends p → p − mV, so k′ and λ′ = h/p′ change too. Both start from the same lab λ; speeds are in units of the wave/particle speed in S.",slider('V','Observer speed V',-0.8,0.95,0.05,0.4,v=>Number(v).toFixed(2))+`<label class="control">Wave <select id="boostMode"><option value="ordinary">Ordinary (sound / water)</option><option value="matter">Matter wave (de Broglie)</option></select></label>`,280);
+ let V=0.4,mode='ordinary';const lam=4,Xmax=24;
+ const draw=()=>{const{w,h}=fit(s.canvas),c=s.ctx;c.clearRect(0,0,w,h);
+  const ordinary=mode==='ordinary',denom=1-V;
+  const lamP=ordinary?lam:lam/denom,kRatio=ordinary?1:denom,wRatio=ordinary?1-V:denom*denom;
+  const pad=30,X=x=>pad+(x/Xmax)*(w-2*pad),amp=h*0.11;
+  const row=(y,lamRow,label)=>{c.strokeStyle='#d9e0e8';c.beginPath();c.moveTo(pad,y);c.lineTo(w-pad,y);c.stroke();
+   c.strokeStyle='#145da0';c.lineWidth=2;c.beginPath();for(let i=0;i<=240;i++){const x=i/240*Xmax,yy=y-amp*Math.cos(2*Math.PI*x/lamRow);i?c.lineTo(X(x),yy):c.moveTo(X(x),yy)}c.stroke();c.lineWidth=1;
+   c.strokeStyle='#b7791f';for(let cxr=lamRow;cxr<Xmax;cxr+=lamRow){c.beginPath();c.moveTo(X(cxr),y-amp*1.25);c.lineTo(X(cxr),y+amp*0.4);c.stroke()}
+   if(lamRow*2<=Xmax){c.strokeStyle='#0f766e';c.beginPath();c.moveTo(X(lamRow),y+amp*1.45);c.lineTo(X(lamRow*2),y+amp*1.45);c.stroke()}
+   c.fillStyle='#18202b';c.fillText(label+'   (λ = '+lamRow.toFixed(2)+')',pad,y-amp*1.5)};
+  c.font='12px sans-serif';
+  row(h*0.30,lam,'S (lab frame)');
+  row(h*0.72,lamP,"S′ (moving at V = "+V.toFixed(2)+')');
+  c.fillStyle='#18202b';c.font='13px sans-serif';
+  c.fillText(ordinary?'Ordinary wave: crests are physical events — every frame photographs the same spacing. Only ω (the pitch) shifts.':"Matter wave: p′ = p − mV, so the moving observer's crests genuinely spread out or squeeze together.",pad,h-10);
+  s.readout.innerHTML=`<div>λ (lab) <b>${lam.toFixed(2)}</b></div><div>λ′ (moving) <b>${lamP.toFixed(2)}</b></div><div>k′/k <b>${kRatio.toFixed(3)}</b></div><div>ω′/ω <b>${wRatio.toFixed(3)}</b></div>`};
+ bindRange(el,'V',v=>{V=v;draw()});
+ el.querySelector('#boostMode').addEventListener('change',e=>{mode=e.target.value;draw()});
+ draw();};
+/* ---- Which wave may a free particle be? (L4.6) ---- */
+Sims.freewave=function(el){const s=simShell(el,"Simulation — which wave may a free particle be?","Try each candidate for a right-moving free-particle wave, then add its left-moving partner. Sine and cosine mixtures periodically become zero at every x at once — the particle would vanish. The complex-exponential mixture becomes 2cos(kx)e^{−iωt}: |ψ|² = 4cos²(kx), which never vanishes everywhere — it only has nodes. Scrub ωt, or play it. Paused by default; playback auto-pauses after 30 s.",`<label class="control">Candidate wave <select id="fwCand"><option value="exp">e^{i(kx−ωt)} (complex)</option><option value="sin">sin(kx−ωt)</option><option value="cos">cos(kx−ωt)</option></select></label><label class="control"><input type="checkbox" id="fwBoth" checked> add the left-moving partner</label>`+slider('wt','Phase ωt',0,360,1,0,v=>v+'°')+`<button class="btn btn-dark" id="fwPlay">▶ Play</button>`,320);
+ let cand='exp',both=true,deg=0;
+ const psi=x=>{const tr=deg*Math.PI/180;let re,im=0;
+  if(cand==='exp'){re=Math.cos(x-tr);im=Math.sin(x-tr);if(both){re+=Math.cos(x+tr);im-=Math.sin(x+tr)}}
+  else if(cand==='sin'){re=Math.sin(x-tr);if(both)re+=Math.sin(x+tr)}
+  else{re=Math.cos(x-tr);if(both)re+=Math.cos(x+tr)}
+  return[re,im]};
+ const draw=()=>{const{w,h}=fit(s.canvas),c=s.ctx;c.clearRect(0,0,w,h);
+  const pad=30,Xmax=4*Math.PI,X=x=>pad+(x/Xmax)*(w-2*pad),y0=h*0.34,amp=h*0.2,scale=both?2:1;
+  let maxP=0;const pts=[];
+  for(let i=0;i<=240;i++){const x=i/240*Xmax,[re,im]=psi(x),p=re*re+im*im;if(p>maxP)maxP=p;pts.push([x,re,im,p])}
+  c.font='12px sans-serif';c.fillStyle='#18202b';
+  c.fillText('Re ψ (blue) · Im ψ (amber dashed) — amplitude vs x, k = 1',pad,18);
+  c.strokeStyle='#d9e0e8';c.beginPath();c.moveTo(pad,y0);c.lineTo(w-pad,y0);c.stroke();
+  c.strokeStyle='#145da0';c.lineWidth=2;c.beginPath();pts.forEach(([x,re],i)=>i?c.lineTo(X(x),y0-re/scale*amp):c.moveTo(X(x),y0-re/scale*amp));c.stroke();c.lineWidth=1;
+  c.setLineDash([4,4]);c.strokeStyle='#b7791f';c.beginPath();pts.forEach(([x,re,im],i)=>i?c.lineTo(X(x),y0-im/scale*amp):c.moveTo(X(x),y0-im/scale*amp));c.stroke();c.setLineDash([]);
+  const yP=h*0.9,pScale=both?4:1;
+  c.fillStyle='#18202b';c.fillText('|ψ|² (green) — where the particle can be found',pad,h*0.58);
+  c.strokeStyle='#d9e0e8';c.beginPath();c.moveTo(pad,yP);c.lineTo(w-pad,yP);c.stroke();
+  c.strokeStyle='#0f766e';c.lineWidth=2;c.beginPath();pts.forEach(([x,re,im,p],i)=>i?c.lineTo(X(x),yP-p/pScale*h*0.26):c.moveTo(X(x),yP-p/pScale*h*0.26));c.stroke();c.lineWidth=1;
+  const vanishes=maxP<0.01;
+  c.fillStyle=vanishes?'#b42318':'#0f766e';c.font='13px sans-serif';
+  c.fillText(vanishes?'✗ ψ = 0 at every x right now — the particle disappears':(both?'✓ |ψ|² is never identically zero — at most it has nodes (dark spots)':'A single travelling wave: |ψ|² is smooth and never identically zero'),pad,38);
+  s.readout.innerHTML=`<div>ωt <b>${deg.toFixed(0)}°</b></div><div>max |ψ|² <b>${maxP.toFixed(2)}</b></div><div>${vanishes?'✗ zero everywhere — particle disappears':'✓ not identically zero'}</div>`};
+ bindRange(el,'wt',v=>{deg=v;draw()});
+ el.querySelector('#fwCand').addEventListener('change',e=>{cand=e.target.value;draw()});
+ el.querySelector('#fwBoth').addEventListener('change',e=>{both=e.target.checked;draw()});
+ const fwPlayBtn=el.querySelector('#fwPlay');
+ const animFw=makeAnim(()=>{deg=(deg+3)%360;const i=el.querySelector('#wt');if(i)i.value=String(deg);const o=el.querySelector('#wtOut');if(o)o.textContent=deg+'°';draw()},playing=>{if(fwPlayBtn)fwPlayBtn.textContent=playing?'⏸ Pause':'▶ Play'});
+ if(fwPlayBtn)fwPlayBtn.onclick=()=>animFw.toggle();
  draw();};
