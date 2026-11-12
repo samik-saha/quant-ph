@@ -256,3 +256,69 @@ Sims.freewave=function(el){const s=simShell(el,"Simulation — which wave may a 
  const animFw=makeAnim(()=>{deg=(deg+3)%360;const i=el.querySelector('#wt');if(i)i.value=String(deg);const o=el.querySelector('#wtOut');if(o)o.textContent=deg+'°';draw()},playing=>{if(fwPlayBtn)fwPlayBtn.textContent=playing?'⏸ Pause':'▶ Play'});
  if(fwPlayBtn)fwPlayBtn.onclick=()=>animFw.toggle();
  draw();};
+/* ---- Momentum/energy operators acting on a plane wave (L5.1) ---- */
+Sims.operator=function(el){const s=simShell(el,"Simulation — operators read eigenvalues off a plane wave","Predict first: what should (ħ/i)∂ₓ do to e^{ikx}? With ħ = 1, p̂ψ should be k times ψ itself — same shape, scaled. Change k and watch Re ψ (blue) against Re(p̂ψ) (green): they stay in step, with ratio ħk. The energy reading ħω uses the free-particle ω = k²/2.",slider('kop','Wave number k',0.5,2.5,0.05,1.2,v=>Number(v).toFixed(2)),280);
+ let k=1.2;
+ const draw=()=>{const{w,h}=fit(s.canvas),c=s.ctx;c.clearRect(0,0,w,h);
+  const pad=30,Xmax=4*Math.PI,X=x=>pad+(x/Xmax)*(w-2*pad),y0=h*0.52,amp=h*0.3,sc=Math.max(1,k);
+  c.font='12px sans-serif';c.fillStyle='#18202b';c.fillText('Re ψ = cos(kx) (blue) · Re(p̂ψ) = ħk·cos(kx) (green) — same shape, scaled by the eigenvalue ħk',pad,18);
+  c.strokeStyle='#d9e0e8';c.beginPath();c.moveTo(pad,y0);c.lineTo(w-pad,y0);c.stroke();
+  c.strokeStyle='#145da0';c.lineWidth=2;c.beginPath();for(let i=0;i<=240;i++){const x=i/240*Xmax;i?c.lineTo(X(x),y0-Math.cos(k*x)/sc*amp):c.moveTo(X(x),y0-Math.cos(k*x)/sc*amp)}c.stroke();c.lineWidth=1;
+  c.strokeStyle='#0f766e';c.lineWidth=2;c.beginPath();for(let i=0;i<=240;i++){const x=i/240*Xmax;i?c.lineTo(X(x),y0-k*Math.cos(k*x)/sc*amp):c.moveTo(X(x),y0-k*Math.cos(k*x)/sc*amp)}c.stroke();c.lineWidth=1;
+  c.fillStyle='#18202b';c.font='13px sans-serif';c.fillText('p̂ψ = ħk·ψ and Êψ = ħω·ψ: the plane wave is an eigenfunction of both operators.',pad,h-12);
+  s.readout.innerHTML=`<div>k <b>${k.toFixed(2)}</b></div><div>p̂ψ = ħk·ψ, eigenvalue ħk <b>${k.toFixed(2)}</b> (ħ = 1)</div><div>Êψ = ħω·ψ, ω = k²/2 <b>${(k*k/2).toFixed(2)}</b></div>`};
+ bindRange(el,'kop',v=>{k=v;draw()});draw();};
+/* ---- Does this plane wave satisfy the free Schrödinger equation? (L5.2) ---- */
+Sims.schrodcheck=function(el){const s=simShell(el,"Simulation — does this wave satisfy the free Schrödinger equation?","Predict first: for which ω does e^{i(kx−ωt)} solve iħ∂ₜΨ = −(ħ²/2m)∂ₓ²Ψ? In units ħ = m = 1 the two sides are ω·ψ (blue) and (k²/2)·ψ (green) — they coincide only on the dispersion parabola. Scrub k and ω, then snap ω onto it.",slider('ksc','Wave number k',0.4,2.4,0.05,1.2,v=>Number(v).toFixed(2))+slider('wsc','Frequency ω',0.1,3,0.01,1,v=>Number(v).toFixed(2))+`<button class="btn btn-dark" id="scSnap">Snap ω to ħk²/2m</button>`,300);
+ let k=1.2,om=1;
+ const draw=()=>{const{w,h}=fit(s.canvas),c=s.ctx;c.clearRect(0,0,w,h);
+  const disp=k*k/2,res=om-disp,ok=Math.abs(res)<0.005;
+  const pad=30,Xmax=4*Math.PI,X=x=>pad+(x/Xmax)*(w-2*pad),y0=h*0.52,amp=h*0.3,sc=Math.max(om,disp,0.2);
+  c.font='12px sans-serif';c.fillStyle='#18202b';c.fillText('Re(iħ∂ₜΨ) = ω·cos(kx) (blue) · Re(−(ħ²/2m)∂ₓ²Ψ) = (k²/2)·cos(kx) (green), at t = 0',pad,18);
+  c.strokeStyle='#d9e0e8';c.beginPath();c.moveTo(pad,y0);c.lineTo(w-pad,y0);c.stroke();
+  c.strokeStyle='#145da0';c.lineWidth=2;c.beginPath();for(let i=0;i<=240;i++){const x=i/240*Xmax;i?c.lineTo(X(x),y0-om*Math.cos(k*x)/sc*amp):c.moveTo(X(x),y0-om*Math.cos(k*x)/sc*amp)}c.stroke();c.lineWidth=1;
+  c.strokeStyle='#0f766e';c.lineWidth=2;c.beginPath();for(let i=0;i<=240;i++){const x=i/240*Xmax;i?c.lineTo(X(x),y0-disp*Math.cos(k*x)/sc*amp):c.moveTo(X(x),y0-disp*Math.cos(k*x)/sc*amp)}c.stroke();c.lineWidth=1;
+  c.fillStyle=ok?'#0f766e':'#b42318';c.font='13px sans-serif';c.fillText(ok?'✓ The two sides coincide — this (k, ω) satisfies the free Schrödinger equation':'✗ The two sides differ — this (k, ω) is filtered out by the equation',pad,h-12);
+  s.readout.innerHTML=`<div>k <b>${k.toFixed(2)}</b></div><div>ω <b>${om.toFixed(2)}</b></div><div>ħk²/2m <b>${disp.toFixed(2)}</b></div><div>residual ω − k²/2 <b>${res.toFixed(2)}</b></div><div>${ok?'✓ satisfies the equation':'✗ does not satisfy the equation'}</div>`};
+ bindRange(el,'ksc',v=>{k=v;draw()});
+ const wInput=bindRange(el,'wsc',v=>{om=v;draw()});
+ el.querySelector('#scSnap').onclick=()=>{om=k*k/2;if(wInput)wInput.value=String(om);const o=el.querySelector('#wscOut');if(o)o.textContent=om.toFixed(2);draw()};
+ draw();};
+/* ---- The x-p commutator on a test function (L5.3) ---- */
+Sims.commutator=function(el){const s=simShell(el,"Simulation — [x̂, p̂]f = iħf, seen on a test function","Take a Gaussian test function f (ħ = 1). The commutator (x̂p̂ − p̂x̂)f is computed from f and its derivative by the product rule — no identity assumed — then divided by i so it can be plotted. It lands exactly on ħf for every width σ: the extra term is the derivative hitting the factor x.",slider('csig','Test-function width σ',0.8,2.2,0.05,1.4,v=>Number(v).toFixed(2)),280);
+ let sig=1.4;
+ const draw=()=>{const{w,h}=fit(s.canvas),c=s.ctx;c.clearRect(0,0,w,h);
+  let maxDiff=0;const pts=[];
+  for(let i=0;i<=240;i++){const x=-6+12*i/240,f=Math.exp(-(x*x)/(2*sig*sig)),fp=-(x/(sig*sig))*f;
+   const commOverI=-(x*fp)+(f+x*fp); // ((x p - p x)f)/i with p = (1/i)d/dx, hbar=1
+   if(Math.abs(commOverI-f)>maxDiff)maxDiff=Math.abs(commOverI-f);pts.push([x,f,commOverI])}
+  const pad=30,X=x=>pad+((x+6)/12)*(w-2*pad),y0=h*0.86,amp=h*0.62;
+  c.font='12px sans-serif';c.fillStyle='#18202b';c.fillText('((x̂p̂ − p̂x̂)f)/i (blue) and ħf (green dashed): identical curves, for any σ',pad,18);
+  c.strokeStyle='#d9e0e8';c.beginPath();c.moveTo(pad,y0);c.lineTo(w-pad,y0);c.stroke();
+  c.strokeStyle='#145da0';c.lineWidth=2;c.beginPath();pts.forEach(([x,f,cv],i)=>i?c.lineTo(X(x),y0-cv*amp):c.moveTo(X(x),y0-cv*amp));c.stroke();c.lineWidth=1;
+  c.setLineDash([4,4]);c.strokeStyle='#0f766e';c.beginPath();pts.forEach(([x,f],i)=>i?c.lineTo(X(x),y0-f*amp):c.moveTo(X(x),y0-f*amp));c.stroke();c.setLineDash([]);
+  s.readout.innerHTML=`<div>σ <b>${sig.toFixed(2)}</b></div><div>max difference <b>${maxDiff.toFixed(3)}</b></div><div>[x̂, p̂]f = iħf for this f — and for every smooth f</div>`};
+ bindRange(el,'csig',v=>{sig=v;draw()});draw();};
+/* ---- Born rule: detections build up |Psi|^2 (L5.5) ---- */
+Sims.born=function(el){const s=simShell(el,"Simulation — Born rule: one spot at a time, |Ψ|² in the aggregate","Each detection is a single localized spot — nothing is smeared. Fire many particles prepared in the same Gaussian state and the spots accumulate into |Ψ|² (green). Predict first: what happens to the histogram if Ψ is multiplied by a global phase e^{iθ}? Scrub θ and check: nothing changes.",slider('bsig','Packet width σ',0.7,2,0.05,1.2,v=>Number(v).toFixed(2))+slider('bornTheta','Global phase θ',0,360,1,0,v=>v+'°')+`<button class="btn btn-dark" id="bornFire">Detect 1 particle</button><button class="btn" id="born500">Detect 500</button><button class="btn" id="bornClear">Clear</button>`,300);
+ let sig=1.2,theta=0,samples=[];
+ const peak=()=>1/(sig*Math.sqrt(2*Math.PI));
+ const sample=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return sig*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+ const draw=()=>{const{w,h}=fit(s.canvas),c=s.ctx;c.clearRect(0,0,w,h);
+  const pad=30,X=x=>pad+((x+6)/12)*(w-2*pad),y0=h*0.88,amp=h*0.6,pk=peak();
+  c.font='12px sans-serif';c.fillStyle='#18202b';c.fillText('|Ψ|² for a Gaussian packet (green) · histogram of individual detections (teal bars)',pad,18);
+  const bins=40,counts=new Array(bins).fill(0);
+  samples.forEach(x=>{const b=Math.floor((x+6)/12*bins);if(b>=0&&b<bins)counts[b]++});
+  const maxCount=Math.max(1,...counts);
+  c.fillStyle='rgba(20,93,160,0.35)';
+  counts.forEach((n,b)=>{if(!n)return;const x0=X(-6+12*b/bins),x1=X(-6+12*(b+1)/bins);c.fillRect(x0,y0-amp*0.92*(n/maxCount),Math.max(1,x1-x0-1),amp*0.92*(n/maxCount))});
+  c.strokeStyle='#d9e0e8';c.beginPath();c.moveTo(pad,y0);c.lineTo(w-pad,y0);c.stroke();
+  c.strokeStyle='#0f766e';c.lineWidth=2;c.beginPath();for(let i=0;i<=240;i++){const x=-6+12*i/240,p=pk*Math.exp(-(x*x)/(2*sig*sig));i?c.lineTo(X(x),y0-p/pk*amp*0.92):c.moveTo(X(x),y0-p/pk*amp*0.92)}c.stroke();c.lineWidth=1;
+  c.fillStyle='#18202b';c.font='13px sans-serif';c.fillText(samples.length?'Each dot was one localized detection; only the aggregate traces |Ψ|². A global phase e^{iθ} changes Ψ but not |Ψ|².':'No detections yet — fire particles and watch single spots build the density.',pad,h-8);
+  const mean=samples.length?samples.reduce((a,b)=>a+b,0)/samples.length:0;
+  s.readout.innerHTML=`<div>detections <b>${samples.length}</b></div><div>σ <b>${sig.toFixed(2)}</b></div><div>θ <b>${theta.toFixed(0)}°</b></div><div>peak |Ψ|² <b>${pk.toFixed(3)}</b></div><div>sample mean <b>${samples.length?mean.toFixed(2):'—'}</b></div>`};
+ bindRange(el,'bsig',v=>{sig=v;draw()});
+ bindRange(el,'bornTheta',v=>{theta=v;draw()});
+ el.querySelector('#bornFire').onclick=()=>{samples.push(sample());draw()};
+ el.querySelector('#born500').onclick=()=>{for(let i=0;i<500;i++)samples.push(sample());draw()};
+ el.querySelector('#bornClear').onclick=()=>{samples=[];draw()};draw();};

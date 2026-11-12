@@ -7,9 +7,10 @@ Interactive web companion to MIT OCW **8.04 Quantum Physics I** (Prof. Barton Zw
 ## What is inside
 
 - **Follow-along notes** for each of the 115 clips: embedded (privacy-enhanced) YouTube video, plain-English summary, full equations (MathJax), and a one-line takeaway.
-- **11 interactive simulations** (vanilla canvas, no build step): Malus's law with single-photon counting, complex phasor, superposition measurement, Mach–Zehnder interferometer (phase + blocked arm), Elitzur–Vaidman bomb tester, photoelectric effect, Compton scattering, de Broglie wavelength, wavepacket (phase vs group velocity, rigid motion + spreading, segment presets, stationary-phase panel), Galilean boost (ordinary vs matter wave), and candidate free-particle waves (sin/cos vs \(e^{i(kx-\omega t)}\)) — reused wherever they fit later lectures.
-- **Checkpoint quizzes** (164 questions) with instant explanations, plus a per-clip "mark done" progress tracker (localStorage only).
+- **15 interactive simulations** (vanilla canvas, no build step): Malus's law with single-photon counting, complex phasor, superposition measurement, Mach–Zehnder interferometer (phase + blocked arm), Elitzur–Vaidman bomb tester, photoelectric effect, Compton scattering, de Broglie wavelength, wavepacket (phase vs group velocity, rigid motion + spreading, segment presets, stationary-phase panel), Galilean boost (ordinary vs matter wave), candidate free-particle waves (sin/cos vs \(e^{i(kx-\omega t)}\)), momentum/energy operators acting on a plane wave, a free-Schrödinger-equation checker (residual vanishes only at \(\omega=\hbar k^2/2m\)), the \([\hat{x},\hat{p}]\) commutator on a Gaussian test function, and a Born-rule detection sampler (single spots accumulating into \(|\Psi|^2\), invariant under a global phase) — reused wherever they fit later lectures.
+- **Checkpoint quizzes** (166 questions) with instant explanations, plus a per-clip "mark done" progress tracker (localStorage only).
 - **Revision mode**: flashcards, a printable one-screen equation sheet, and collapsed explanations.
+- **Dark mode**: a ☾/☀ toggle in the top bar of every page. The choice is stored in `localStorage` (`qm804-theme`); with no stored choice, the OS `prefers-color-scheme` setting wins. Simulation canvases deliberately keep their light plotting area so the dark-ink plots stay legible.
 
 ## Pages
 
@@ -22,7 +23,7 @@ Interactive web companion to MIT OCW **8.04 Quantum Physics I** (Prof. Barton Zw
 node --test tests/
 ```
 
-Covers the simulation canvas-sizing regression (redrawing a simulation must never change the canvas size), the animation policy (simulations start paused and auto-pause after 30 s of playback), wavepacket/de Broglie correctness (spreading rate and normalisation, \(v_{ph}=k_0/2\) labelling, crest spacing proportional to λ), segment-aware wavepacket presets (e.g. spreading off for L4.5's rigid motion, on for L7.5's free evolution), and the Lecture 4 sims (boost λ-invariance contrast, L4.4 stationary-phase panel, L4.6 sine-vs-exponential vanishing test).
+Covers the simulation canvas-sizing regression (redrawing a simulation must never change the canvas size), the animation policy (simulations start paused and auto-pause after 30 s of playback), wavepacket/de Broglie correctness (spreading rate and normalisation, \(v_{ph}=k_0/2\) labelling, crest spacing proportional to λ), segment-aware wavepacket presets (e.g. spreading off for L4.5's rigid motion, on for L7.5's free evolution), the Lecture 4 sims (boost λ-invariance contrast, L4.4 stationary-phase panel, L4.6 sine-vs-exponential vanishing test), and Lecture 5 (checkpoint answer keys and coverage for every segment, Born-rule density notation, and the operator / Schrödinger-checker / commutator / Born-sampler sims).
 
 ## Run locally
 

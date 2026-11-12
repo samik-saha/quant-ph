@@ -61,6 +61,12 @@ function render(){
  renderProgress();
 }
 function renderNavTicks(){document.querySelectorAll('.nav-seg').forEach(a=>{const t=a.querySelector('.tick');if(t)t.textContent=done.has(a.dataset.seg)?'✓':''})}
+const THEME_KEY='qm804-theme';
+function applyTheme(t,save){if(t!=='dark'&&t!=='light')t='light';document.body.dataset.theme=t;if(save)try{localStorage.setItem(THEME_KEY,t)}catch(e){}document.querySelectorAll('[data-theme-toggle]').forEach(b=>{b.setAttribute('aria-pressed',t==='dark'?'true':'false');b.textContent=t==='dark'?'☀ Light':'☾ Dark';b.title=t==='dark'?'Switch to light mode':'Switch to dark mode'})}
+let initialTheme='light';
+try{const savedTheme=localStorage.getItem(THEME_KEY);if(savedTheme==='dark'||savedTheme==='light')initialTheme=savedTheme;else if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)initialTheme='dark'}catch(e){}
+applyTheme(initialTheme,false);
+document.querySelectorAll('[data-theme-toggle]').forEach(b=>b.addEventListener('click',()=>applyTheme(document.body.dataset.theme==='dark'?'light':'dark',true)));
 const WIDTHS=['standard','wide','full'];
 function applyWidth(w){if(!WIDTHS.includes(w))w='standard';document.body.dataset.width=w;try{localStorage.setItem('qm804-width',w)}catch(e){}document.querySelectorAll('.width-switch button').forEach(x=>x.classList.toggle('is-active',x.dataset.width===w))}
 let savedWidth='standard';try{savedWidth=localStorage.getItem('qm804-width')||'standard'}catch(e){}

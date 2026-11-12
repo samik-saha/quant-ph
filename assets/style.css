@@ -104,3 +104,26 @@ body.mode-equations .segment,body.mode-equations .hero,body.mode-equations .side
 .crumbs{font-size:13px;color:var(--muted);margin:0}
 .nav-lecture>a.is-current{color:var(--accent)}
 .sim canvas{width:100%;display:block}
+.theme-btn{background:transparent;color:#cbd5e1;border:1px solid #3a4658;padding:7px 14px;border-radius:999px;white-space:nowrap}
+.theme-btn:hover{border-color:#cbd5e1}
+/* Dark mode: same layout, dark surfaces. Canvas plots keep their light
+   plotting area (drawn with dark ink) as an intentional exception. */
+body[data-theme="dark"]{--ink:#e6edf3;--muted:#9fb0c3;--paper:#151d29;--bg:#0c1118;--line:#2b3748;--accent:#e9c46a;--accent-bg:#2e2410;--teal:#2dd4bf;--teal-bg:#0c2b26;--red:#f87171;color-scheme:dark}
+body[data-theme="dark"] a{color:#7db8ec}
+body[data-theme="dark"] .side-note,body[data-theme="dark"] .howto{color:#9fb0c3}
+body[data-theme="dark"] .nav-toggle,body[data-theme="dark"] .ghost-btn,body[data-theme="dark"] .btn,body[data-theme="dark"] .opt,body[data-theme="dark"] .flash,body[data-theme="dark"] select{background:var(--paper);color:var(--ink)}
+body[data-theme="dark"] .nav-toggle:hover,body[data-theme="dark"] .nav-seg:hover{background:#1e293b}
+body[data-theme="dark"] .nav-seg{color:#cbd5e1}
+body[data-theme="dark"] .chip{background:#1c2635}
+body[data-theme="dark"] .eq-box{background:#221a0d;border-color:#584511}
+body[data-theme="dark"] .eq-label,body[data-theme="dark"] .lecture-card .card-segs{color:#e9c46a}
+body[data-theme="dark"] .callout-key{border-color:#134e4a}
+body[data-theme="dark"] .callout-warn,body[data-theme="dark"] .opt.wrong{background:#2f1512;border-color:#7f2d23}
+body[data-theme="dark"] .sim{background:#101724}
+body[data-theme="dark"] .sim canvas{background:#fff}
+body[data-theme="dark"] .control{color:#cbd5e1}
+body[data-theme="dark"] .done-toggle{border-color:#134e4a}
+body[data-theme="dark"] .flash .back{color:#cbd5e1}
+body[data-theme="dark"] .lecture-card{background:var(--paper)}
+body[data-theme="dark"] .lecture-card .card-go{color:#7db8ec}
+@media print{body[data-theme="dark"]{--paper:#fff;--ink:#000;--muted:#333;--bg:#fff;--line:#ccc;color-scheme:light}}
