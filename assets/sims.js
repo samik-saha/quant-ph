@@ -322,3 +322,49 @@ Sims.born=function(el){const s=simShell(el,"Simulation — Born rule: one spot a
  el.querySelector('#bornFire').onclick=()=>{samples.push(sample());draw()};
  el.querySelector('#born500').onclick=()=>{for(let i=0;i<500;i++)samples.push(sample());draw()};
  el.querySelector('#bornClear').onclick=()=>{samples=[];draw()};draw();};
+/* ---- Normalisable vs box-normalised plane wave (L6.1/L6.2) ---- */
+Sims.normcheck=function(el,seg){const isHerm=seg==='L6.2';
+ const s=simShell(el,"Simulation — normalisable? the norm decides","A lone plane wave e^{ikx} has |e^{ikx}|² = 1, so its norm over a box of length L is L — it diverges as L→∞. The box-normalised L^{-1/2}e^{ikx} has norm 1 by construction. A Gaussian packet always integrates to 1, at any σ, because its tails die away. (Units ħ=m=1.)"+(isHerm?" L6.2: a Hermitian Ĥ (real V, vanishing boundary terms) keeps the packet norm at 1 for all time — watch the Gaussian norm stay fixed while the plane-wave norm keeps growing with L.":''),slider('nL','Box length L',2,20,0.5,10,v=>v.toFixed(1))+slider('nSigma','Gaussian σ',0.5,2.5,0.05,1.2,v=>Number(v).toFixed(2)),300);
+ let L=10,sig=1.2;
+ const draw=()=>{const{w,h}=fit(s.canvas),c=s.ctx;c.clearRect(0,0,w,h);
+  const pad=30,Xmax=12,X=x=>pad+((x+6)/12)*(w-2*pad);
+  const yN=h*0.55,ampN=h*0.28;
+  const rhoG=x=>Math.exp(-(x*x)/(2*sig*sig))/(sig*Math.sqrt(2*Math.PI));
+  c.font='12px sans-serif';c.fillStyle='#18202b';
+  c.fillText('Green: |Ψ|² for Gaussian (tails die) · Blue: |e^{ikx}|² = 1 (no tails)',pad,18);
+  c.strokeStyle='#d9e0e8';c.beginPath();c.moveTo(pad,yN);c.lineTo(w-pad,yN);c.stroke();
+  c.strokeStyle='#145da0';c.lineWidth=2;c.beginPath();c.moveTo(X(-6),yN-ampN*0.8);c.lineTo(X(6),yN-ampN*0.8);c.stroke();c.lineWidth=1;
+  c.strokeStyle='#0f766e';c.lineWidth=2;c.beginPath();for(let i=0;i<=240;i++){const x=-6+12*i/240,p=rhoG(x);i?c.lineTo(X(x),yN-p*ampN*Math.sqrt(2*Math.PI)*sig):c.moveTo(X(x),yN-p*ampN*Math.sqrt(2*Math.PI)*sig)}c.stroke();c.lineWidth=1;
+  const xL0=-L/2,xL1=L/2;if(xL0>=-6&&xL1<=6){c.strokeStyle='#b7791f';c.setLineDash([4,4]);c.beginPath();c.moveTo(X(xL0),yN-ampN);c.lineTo(X(xL0),yN+10);c.moveTo(X(xL1),yN-ampN);c.lineTo(X(xL1),yN+10);c.stroke();c.setLineDash([]);c.fillStyle='#b7791f';c.fillText('box [-L/2, L/2]',X(xL0)+4,yN+24)}
+  c.fillStyle='#18202b';c.font='13px sans-serif';
+  c.fillText(isHerm?'Hermitian case: Gaussian norm = 1 at all t (Ĥ Hermitian, V real, boundary terms zero). Plane-wave norm = L grows without bound — unphysical on ℝ.':'∫|e^{ikx}|²dx = L → ∞ as L→∞ (needs a packet). ∫|Ψ_Gaussian|²dx = 1 for every σ.',pad,h-10);
+  s.readout.innerHTML=`<div>L <b>${L.toFixed(1)}</b></div><div>∫(box)|e^{ikx}|²dx <b>${L.toFixed(1)}</b></div><div>∫|Ψ_Gaussian|²dx <b>1.000</b> (σ=${sig.toFixed(2)})</div><div>box-normalised <b>L^{-1/2}e^{ikx}</b> norm <b>1.000</b></div>`};
+ bindRange(el,'nL',v=>{L=v;draw()});bindRange(el,'nSigma',v=>{sig=v;draw()});draw();};
+/* ---- Probability current for a Gaussian packet (L6.3/L6.4) ---- */
+Sims.probcurrent=function(el,seg){const is3D=seg==='L6.4';
+ const s=simShell(el,"Simulation — probability current: ρ and j together","For a Gaussian packet Ψ = (2πσ²)^(-1/4) e^{-x²/4σ² + ik₀x} (t=0, ħ=m=1), density ρ=|Ψ|² and current j=Im(Ψ*∂ₓΨ)=k₀ρ. Slide k₀: at k₀=0 the packet stands still and j ≡ 0 (real Ψ); at k₀≠0 the phase runs and j tracks ρ. This is ∂ₜρ+∂ₓj=0 made visible — probability is transported, never created."+(is3D?" L6.4: in 3D, j becomes the vector (ħ/m)Im(Ψ*∇Ψ) with ∇·j balancing ∂ₜρ; the total inside any volume changes only by flux ∮j·dS through its surface, exactly like charge with j_e=ej.":""),slider('ck0','Carrier k₀',-1.5,1.5,0.05,0.8,v=>Number(v).toFixed(2))+slider('csig','Packet σ',0.5,2.5,0.05,1.2,v=>Number(v).toFixed(2))+`<label class="control"><input type="checkbox" id="cShowJ" checked> show current j (amber)</label>`,340);
+ let k0=0.8,sig=1.2,showJ=true;
+ const draw=()=>{const{w,h}=fit(s.canvas),c=s.ctx;c.clearRect(0,0,w,h);
+  const pad=30,Xmax=12,X=x=>pad+((x+6)/12)*(w-2*pad);
+  const rho=x=>Math.exp(-(x*x)/(2*sig*sig))/(sig*Math.sqrt(2*Math.PI));
+  const j=x=>k0*rho(x); // ħ=m=1: Im(Ψ*Ψ') = k₀ρ for this packet
+  const pk=rho(0);
+  const yR=h*0.48,yJ=h*0.82,ampR=h*0.28,ampJ=h*0.22;
+  c.font='12px sans-serif';c.fillStyle='#18202b';
+  c.fillText('ρ(x) — density (green) · j(x)=k₀ρ — current (amber) vs x',pad,18);
+  c.strokeStyle='#d9e0e8';c.beginPath();c.moveTo(pad,yR);c.lineTo(w-pad,yR);c.moveTo(pad,yJ);c.lineTo(w-pad,yJ);c.stroke();
+  c.strokeStyle='#0f766e';c.lineWidth=2;c.beginPath();for(let i=0;i<=240;i++){const x=-6+12*i/240,p=rho(x);i?c.lineTo(X(x),yR-p/pk*ampR):c.moveTo(X(x),yR-p/pk*ampR)}c.stroke();c.lineWidth=1;
+  c.fillStyle='rgba(15,118,110,0.12)';c.beginPath();for(let i=0;i<=240;i++){const x=-6+12*i/240,p=rho(x);i?c.lineTo(X(x),yR-p/pk*ampR):c.moveTo(X(x),yR-p/pk*ampR)}for(let i=240;i>=0;i--){const x=-6+12*i/240;c.lineTo(X(x),yR)}c.closePath();c.fill();
+  if(showJ){const jpk=Math.max(1e-9,1.5*pk);
+   c.strokeStyle='#b7791f';c.setLineDash([4,4]);c.lineWidth=1;c.beginPath();c.moveTo(pad,yJ);c.lineTo(w-pad,yJ);c.stroke();c.setLineDash([]);
+   c.strokeStyle='#b7791f';c.lineWidth=2;c.beginPath();for(let i=0;i<=240;i++){const x=-6+12*i/240,vv=j(x);i?c.lineTo(X(x),yJ-vv/jpk*ampJ):c.moveTo(X(x),yJ-vv/jpk*ampJ)}c.stroke();c.lineWidth=1;
+   // velocity arrows at the peak
+   const vx=0,vy=yJ-j(0)/jpk*ampJ;c.fillStyle='#b7791f';c.beginPath();c.arc(X(0),vy,4,0,7);c.fill();
+   c.font='11px sans-serif';c.fillText('j = k₀ρ,  v = j/ρ = k₀ (uniform here)',pad,yJ+22);
+  } else {c.fillStyle='#5b6b7d';c.font='11px sans-serif';c.fillText('(current hidden — check the box to see j)',pad,yJ+22)}
+  // standing-vs-moving label
+  c.fillStyle=Math.abs(k0)<0.01?'#5b6b7d':'#18202b';c.font='13px sans-serif';
+  c.fillText(Math.abs(k0)<0.01?'k₀ = 0: real packet at rest — j ≡ 0, no flow, ρ only sloshes in place.':'k₀ ≠ 0: running phase — j = (ħk₀/m)ρ ≠ 0, the hump rides at v_g = ħk₀/m.',pad,h-10);
+  s.readout.innerHTML=`<div>k₀ <b>${k0.toFixed(2)}</b></div><div>peak ρ <b>${pk.toFixed(3)}</b></div><div>peak j <b>${(k0*pk).toFixed(3)}</b></div><div>v = j/ρ <b>${k0.toFixed(2)}</b> (ħ=m=1)</div><div>∫ρdx <b>1.000</b></div>`};
+ bindRange(el,'ck0',v=>{k0=v;draw()});bindRange(el,'csig',v=>{sig=v;draw()});
+ el.querySelector('#cShowJ').addEventListener('change',e=>{showJ=e.target.checked;draw()});draw();};
